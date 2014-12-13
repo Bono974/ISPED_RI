@@ -15,6 +15,11 @@ import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 public class Ontologie {
+	/**
+	 * Cet attribut correspond au modèle
+     * de l'ontologie utilisée
+	 * @see Ontologie
+	 */
     private OntModel base;
 
     public Ontologie () {
@@ -27,10 +32,15 @@ public class Ontologie {
         this.base = (OntModel) m.read(in, "RDF/XML");
     }
 
-    private List<String> search(List<String> entryWords) {
+    /**
+	 *  Méthode d'expansion de recherche
+	 *  Retourne une liste enrichie de mots clés à partir d'une ontologie
+	 *  @param motsEntres Liste de mots clés
+	 */
+    public List<String> expansionRequete(List<String> motsEntres) {
         OntClass cur;
         List<String> res = new ArrayList<String>();
-        List<String> entryWordsTmp = new ArrayList<String>(entryWords);
+        List<String> motsEntresTmp = new ArrayList<String>(motsEntres);
 
         OntModel inf = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM_MICRO_RULE_INF, this.base);
         System.out.println("tata");
@@ -40,13 +50,18 @@ public class Ontologie {
 
         while(top.hasNext()) { // Top levels concepts
             cur = top.next();
-            res.addAll(recTree(cur, entryWordsTmp)); // From top to bottom (recursive fct)
+            res.addAll(recTree(cur, motsEntresTmp)); // From top to bottom (recursive fct)
         }
 
         return new ArrayList<String>(new HashSet<String>(res)); // Remove all occurences
     }
 
-    private List<String> recTree(OntClass cur, List<String> entryWords){
+    /**
+	 *  Méthode privée permettant de parcourir l'arbre de concepts
+	 *  @param cur Concept 'racine'
+	 *  @param motsEntres List de mots clés
+	 */
+    private List<String> recTree(OntClass cur, List<String> motsEntres){
         List<String> res = new ArrayList<String>();
         ExtendedIterator<OntProperty> tmp1 = cur.listDeclaredProperties(); // List all cur's properties
         while(tmp1.hasNext()) {
@@ -59,8 +74,8 @@ public class Ontologie {
             if (domain.getURI() == null || range.getURI() == null)
                 continue;
 
-            for(String ew:entryWords){
-                // TODO Revoir les conditions pour ajouter l'info (domain/prop/range) dans la liste entryWords
+            for(String ew:motsEntres){
+                // TODO Revoir les conditions pour ajouter l'info (domain/prop/range) dans la liste motsEntres
                 // pour l'expansion de requête
                 if (domain.getURI().contains(ew) || range.getURI().contains(ew)) {
                     res.add(prop);
@@ -74,7 +89,7 @@ public class Ontologie {
             ExtendedIterator<OntClass> subClasses= cur.listSubClasses(); // Follow the subclasses in recursive way
             while (subClasses.hasNext())
                 //System.out.println(subClasses.next());
-                res.addAll(recTree(subClasses.next(), entryWords));
+                res.addAll(recTree(subClasses.next(), motsEntres));
         }
         return res;
     }
@@ -87,7 +102,7 @@ public class Ontologie {
         lword.add("manga");
         lword.add("seiyuu");
 
-        List<String> res = toto.search(lword);
+        List<String> res = toto.expansionRequete(lword);
         System.out.println(res);
     }
 }
