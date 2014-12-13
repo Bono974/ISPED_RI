@@ -17,16 +17,37 @@ import org.apache.tika.Tika;
 
 
 public abstract class IndexerAbs {
+
 	protected StopwordAnalyzerBase analyzer;
+	/**
+	 * Langue utilisée.
+	 */
 	protected String langue;
+	
+	/**
+	 * Chemin de l'index crée.
+	 */
 	protected String indexLocation;
+	
 	protected IndexWriter writer;
 	protected ArrayList<File> queue = new ArrayList<File>();
+	
+	/**
+	 * Chemin des documents à indexer.
+	 */
 	protected String source;
+	
 	protected Tika tika = new Tika();
 	
-	
-	//constructeur
+	/**
+	 * Constructeur de la classe IndexerAbs. Ce constructeur prend la langue, le chemin de l'index à créer, le chemin des documents à indexer,
+	 * et le type d'analyser utilisé en paramètres
+	 * @param langue Langue de l'indexer utilisé
+	 * @param indexLocation Localisation de l'index
+	 * @param source Localisation des sources de documents à indexer
+	 * @param analyzer Type d'analyser utilisé
+	 * @throws IOException
+	 */
 	public IndexerAbs (String langue, String indexLocation, String source, StopwordAnalyzerBase analyzer) throws IOException{
 		
 		
@@ -41,22 +62,40 @@ public abstract class IndexerAbs {
 		this.analyzer = analyzer;
 	}
 	
-	
+	/**
+	 * Getter de l'attribut langue.
+	 * @return langue
+	 */
 	//pour obtenir la langue de l'analyzer utilisé.
 	public String getLangue(){
 		return this.langue;
 	}
 	
+	/**
+	 * Getter de l'analyser utilisé.
+	 * @return analyzer
+	 */
 	//pour obtenir l'analyzer utilisé.
 	public StopwordAnalyzerBase getAnalyzer(){
 		return this.analyzer;
 	}
 	
+	
+	/**
+	 * Getter du chemin de l'index crée.
+	 * @return indexLocation
+	 */
 	//pour obtenir le chemin de l'index crée.
 	public String getIndexLocation(){
 		return this.indexLocation;
 	}
 	
+	
+	/**
+	 * Cette fonction permet d'indexer les documents soumis à partir d'un dossier de documents ou d'un document seul.
+	 * @param fileName Nom du dossier de documents
+	 * @throws IOException
+	 */
 	public void indexFileOrDirectory(String fileName) throws IOException {
 		//===================================================
 		//gets the list of files in a folder (if user has submitted
@@ -100,6 +139,7 @@ public abstract class IndexerAbs {
 
 		queue.clear();
 	}
+	
 	
 	private void addFiles(File file) {
 
