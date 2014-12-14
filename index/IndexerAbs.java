@@ -12,6 +12,8 @@ import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.IndexWriterConfig.OpenMode;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 import org.apache.tika.Tika;
@@ -48,12 +50,14 @@ public abstract class IndexerAbs {
 		
 		FSDirectory dir = FSDirectory.open(new File(indexLocation));
 		IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_40, analyzer);
+		config.setOpenMode(OpenMode.CREATE_OR_APPEND);
 		writer = new IndexWriter(dir, config);
 		 
-
+		
 		this.langue = langue;
 		this.indexLocation = indexLocation;
 		this.analyzer = analyzer;
+		
 	}
 	
 	/**
@@ -114,7 +118,12 @@ public abstract class IndexerAbs {
 				doc.add(new StringField("path", f.getPath(), Field.Store.YES));
 				doc.add(new StringField("filename", f.getName(), Field.Store.YES));
 
+				if (writer.getConfig().getOpenMode() == OpenMode.CREATE){
 				writer.addDocument(doc);
+				System.out.println("Added: " + f);
+				} else{
+					writer.updateDocument(new Term("path", f.getPath()), doc);
+				}
 				System.out.println("Added: " + f);
 				texte.close();
 			} catch (Exception e) {
