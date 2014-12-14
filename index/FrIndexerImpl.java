@@ -7,8 +7,8 @@ import org.apache.lucene.util.Version;
 
 public class FrIndexerImpl extends IndexerAbs{
 	
-	public FrIndexerImpl(String indexLocation, String source) throws IOException{
-		super("Fr", indexLocation, source, new FrenchAnalyzer(Version.LUCENE_40));
+	public FrIndexerImpl(String indexLocation) throws IOException{
+		super("Fr", indexLocation, new FrenchAnalyzer(Version.LUCENE_40));
 		
 	}
 	

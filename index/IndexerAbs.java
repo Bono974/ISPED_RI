@@ -26,7 +26,7 @@ public abstract class IndexerAbs {
 	
 	
 	//constructeur
-	public IndexerAbs (String langue, String indexLocation, String source, StopwordAnalyzerBase analyzer) throws IOException{
+	public IndexerAbs (String langue, String indexLocation, StopwordAnalyzerBase analyzer) throws IOException{
 		
 		
 		FSDirectory dir = FSDirectory.open(new File(indexLocation));
@@ -36,7 +36,6 @@ public abstract class IndexerAbs {
 
 		this.langue = langue;
 		this.indexLocation = indexLocation;
-		this.source = source;
 		this.analyzer = analyzer;
 	}
 	
@@ -124,7 +123,7 @@ public abstract class IndexerAbs {
 		writer.close();
 	}
 	
-	public void action() throws IOException {
+	public void action(String source) throws IOException {
 		indexFileOrDirectory(source);
 		closeIndex();
 	}

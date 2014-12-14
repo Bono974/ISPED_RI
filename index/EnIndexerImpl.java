@@ -6,8 +6,8 @@ import org.apache.lucene.util.Version;
 
 
 public class EnIndexerImpl extends IndexerAbs{
-	public EnIndexerImpl(String indexLocation, String source) throws IOException{
-		super("En", indexLocation, source, new EnglishAnalyzer(Version.LUCENE_40));
+	public EnIndexerImpl(String indexLocation) throws IOException{
+		super("En", indexLocation, new EnglishAnalyzer(Version.LUCENE_40));
 
 
 	}
