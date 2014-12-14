@@ -21,9 +21,6 @@ public abstract class IndexerAbs {
 	protected String indexLocation;
 	protected IndexWriter writer;
 	protected ArrayList<File> queue = new ArrayList<File>();
-	protected String source;
-	
-	
 	
 	//constructeur
 	public IndexerAbs (String langue, String indexLocation, StopwordAnalyzerBase analyzer) throws IOException{
