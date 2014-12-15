@@ -1,6 +1,5 @@
-package projet.interfaceGraphique;
+package projet.ihm;
 
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -13,14 +12,14 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
-import projet.index.EnIndexerImpl;
-import projet.index.FrIndexerImpl;
+
 import projet.index.IndexerAbs;
 import projet.recherche.Recherche;
 import projet.recherche.ScoreEtChemin;
 
+@SuppressWarnings("serial")
 public class InterfaceGraphique extends JFrame {
-	static List<IndexerAbs>listIndexer;
+	List<IndexerAbs>listIndexer;
 	
 	JButton b ;
 	JTextField champSaisie;
@@ -29,14 +28,14 @@ public class InterfaceGraphique extends JFrame {
 
 	JTextArea resultatsArea;
 	
-	private static String source = "/home/yoann/Documents/CR3/";
-	private static String indexLocationFR = "/home/yoann/Documents/IndexRI/FR/";
-	private static String indexLocationEN = "/home/yoann/Documents/IndexRI/EN/";
+
 	
-	public InterfaceGraphique (String titre, int x, int y, int w, int h) throws IOException {
+	public InterfaceGraphique (List<IndexerAbs>listIndexer, String titre, int x, int y, int w, int h) throws IOException {
 
 		super(titre);
 
+		this.listIndexer = listIndexer;
+		
 		// Panel
 		p = new JPanel();
 
@@ -84,11 +83,11 @@ public class InterfaceGraphique extends JFrame {
 		panelOnto.add(labOnto2);
 
 		// Aire des résultats
-		resultatsArea = new JTextArea(8,1);
+		//resultatsArea = new JTextArea(8,1);
 		//resultatsArea.setPreferredSize(new Dimension(10,20));
 		//resultatsArea.setBounds(10, 20, 30, 40);
-		resultatsArea.setAlignmentX(CENTER_ALIGNMENT);
-		p.add(resultatsArea);
+		//resultatsArea.setAlignmentX(CENTER_ALIGNMENT);
+		//p.add(resultatsArea);
 		
 		
 		/*
@@ -119,23 +118,7 @@ public class InterfaceGraphique extends JFrame {
 
 	}
 
-	public static void main(String[] args) throws IOException {
-		listIndexer = new ArrayList<IndexerAbs>();
-		try {
-			listIndexer.add(new EnIndexerImpl(indexLocationEN, source));
-		} catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
-		try {
-			listIndexer.add(new FrIndexerImpl(indexLocationFR, source));
-		} catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
-		new InterfaceGraphique ("Google Onto",400,300,1100	,400);
-	}
-
+	
 	class BoutonListener implements ActionListener {
 
 		@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -158,28 +141,30 @@ public class InterfaceGraphique extends JFrame {
 				
 				// Nombre de documents retournés
 				//int nbDocuments = resultatsRecherche.size();
-				int position = 0;
+				//int position = 0;
 				//resultatsArea.setSelectionStart(0);
 				//resultatsArea.setSelectionEnd(resultatsArea.getText().length());
 				//resultatsArea.set(" ");
-				resultatsArea.setText("");
+				//resultatsArea.setText("");
 				for (ScoreEtChemin cur: resultatsRecherche) {
 					
 					System.out.println("Document : "+cur.getScore()+" "+cur.getChemin());
-					resultatsArea.insert(cur.getChemin()+"\n",position);
+					//resultatsArea.insert(cur.getChemin()+"\n",position);
 					
 					//resultatsArea.setLineWrap(true);
-					position++;
-					/*
+					//position++;
+					
 					JPanel panel = new JPanel();
 					JLabel lab = new JLabel(cur.getChemin());
 					JCheckBox check = new JCheckBox();
 					check.setAlignmentX(CENTER_ALIGNMENT);
 					lab.setAlignmentX(CENTER_ALIGNMENT);
-					p.add(panel);
+					
 					panel.add(check);
 					panel.add(lab);
-					*/
+					p.add(panel);
+					p.validate();
+					p.repaint();
 					
 				}
 							

@@ -90,16 +90,21 @@ public class Recherche {
 					// Une fois le tableau rempli  on le trie, selon le score
 					// par ordre décroissant
 					Collections.sort(tableauSortie, Collections.reverseOrder());
+					reader.close();
 				} catch (Exception e) {
 					System.out.println("Error searching " + motARechercher + " : " + e.getMessage() + " "+ searcher.toString());
 				}
 				return tableauSortie;
 				
 			}
-			else return null;
+			else {
+				return null;
+			}
 			
 		}
-		else return null;
+		else {
+			return null;
+		}
 		
 
 	}

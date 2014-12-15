@@ -102,7 +102,7 @@ public abstract class IndexerAbs {
 	 * @param fileName Nom du dossier de documents
 	 * @throws IOException
 	 */
-	public void indexFileOrDirectory(String fileName) throws IOException {
+	public void indexFileOrDirectory(String fileName) {
 		//===================================================
 		//gets the list of files in a folder (if user has submitted
 		//the name of a folder) or gets a single file name (is user
@@ -138,7 +138,12 @@ public abstract class IndexerAbs {
 				System.out.println("Could not add: " + f);
 				e.printStackTrace();
 			} finally {
-				fr.close();
+				try {
+					fr.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 
@@ -206,11 +211,16 @@ public abstract class IndexerAbs {
 
 	}
 
-	public void closeIndex() throws IOException {
-		writer.close();
+	public void closeIndex() {
+		try {
+			writer.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
-	public void action(String source) throws IOException {
+	public void action(String source) {
 		indexFileOrDirectory(source);
 		closeIndex();
 	}

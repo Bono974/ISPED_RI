@@ -12,15 +12,15 @@ import projet.recherche.ScoreEtChemin;
 
 public class ApplicationYoann {
 
-	private static String source = "/home/yoann/Documents/CR3/";
+	//private static String source = "/home/yoann/Documents/CR3/";
 	private static String indexLocationFR = "/home/yoann/Documents/IndexRI/FR/";
 	private static String indexLocationEN = "/home/yoann/Documents/IndexRI/EN/";
 
 	public static void main(String[] args) throws IOException {
 
 		List<IndexerAbs>listIndexer = new ArrayList<IndexerAbs>();
-		listIndexer.add(new EnIndexerImpl(indexLocationEN, source));
-		listIndexer.add(new FrIndexerImpl(indexLocationFR, source));
+		listIndexer.add(new EnIndexerImpl(indexLocationEN));
+		listIndexer.add(new FrIndexerImpl(indexLocationFR));
 
 		/*
 		// Indexation
@@ -29,7 +29,7 @@ public class ApplicationYoann {
 
 			if (elementIndex.getLangue().equalsIgnoreCase("Fr")) {
 				// On index les documents
-				elementIndex.action();
+				elementIndex.action("/home/yoann/Documents/CR3/");
 			}
 		}
 		*/
@@ -49,10 +49,13 @@ public class ApplicationYoann {
 
 		//Lecture des résultats
 		System.out.println("Début de la recherche");
-		for (ScoreEtChemin cur: resultatsRecherche) {
-			
-			System.out.println("Document : "+cur.getScore()+" "+cur.getChemin());
+		if (!(resultatsRecherche == null)) {
+			for (ScoreEtChemin cur: resultatsRecherche) {
+				
+				System.out.println("Document : "+cur.getScore()+" "+cur.getChemin());
+			}
 		}
+		
 
 		//InterfacePrincipaleAbs ipa = new InterfaceConsoleImpl(listIndexer);
 		//ipa.run();
