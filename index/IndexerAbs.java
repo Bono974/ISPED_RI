@@ -3,6 +3,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import org.apache.lucene.analysis.util.StopwordAnalyzerBase;
@@ -26,16 +32,18 @@ public abstract class IndexerAbs {
 	 * Langue utilisée.
 	 */
 	protected String langue;
-	
+
 	/**
 	 * Chemin de l'index crée.
 	 */
 	protected String indexLocation;
-	
+
 	protected IndexWriter writer;
 	protected ArrayList<File> queue = new ArrayList<File>();
 	protected Tika tika = new Tika();
-	
+
+	protected ArrayList<String> nomColonne = new ArrayList<String>();
+
 	/**
 	 * Constructeur de la classe IndexerAbs. Ce constructeur prend la langue, le chemin de l'index à créer, le chemin des documents à indexer,
 	 * et le type d'analyser utilisé en paramètres
@@ -46,20 +54,20 @@ public abstract class IndexerAbs {
 	 * @throws IOException
 	 */
 	public IndexerAbs (String langue, String indexLocation, StopwordAnalyzerBase analyzer) throws IOException{
-		
-		
+
+
 		FSDirectory dir = FSDirectory.open(new File(indexLocation));
 		IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_40, analyzer);
 		config.setOpenMode(OpenMode.CREATE_OR_APPEND);
 		writer = new IndexWriter(dir, config);
-		 
-		
+
+
 		this.langue = langue;
 		this.indexLocation = indexLocation;
 		this.analyzer = analyzer;
-		
+
 	}
-	
+
 	/**
 	 * Getter de l'attribut langue.
 	 * @return langue
@@ -68,7 +76,7 @@ public abstract class IndexerAbs {
 	public String getLangue(){
 		return this.langue;
 	}
-	
+
 	/**
 	 * Getter de l'analyser utilisé.
 	 * @return analyzer
@@ -77,8 +85,8 @@ public abstract class IndexerAbs {
 	public StopwordAnalyzerBase getAnalyzer(){
 		return this.analyzer;
 	}
-	
-	
+
+
 	/**
 	 * Getter du chemin de l'index crée.
 	 * @return indexLocation
@@ -87,8 +95,8 @@ public abstract class IndexerAbs {
 	public String getIndexLocation(){
 		return this.indexLocation;
 	}
-	
-	
+
+
 	/**
 	 * Cette fonction permet d'indexer les documents soumis à partir d'un dossier de documents ou d'un document seul.
 	 * @param fileName Nom du dossier de documents
@@ -119,8 +127,8 @@ public abstract class IndexerAbs {
 				doc.add(new StringField("filename", f.getName(), Field.Store.YES));
 
 				if (writer.getConfig().getOpenMode() == OpenMode.CREATE){
-				writer.addDocument(doc);
-				System.out.println("Added: " + f);
+					writer.addDocument(doc);
+					System.out.println("Added: " + f);
 				} else{
 					writer.updateDocument(new Term("path", f.getPath()), doc);
 				}
@@ -142,8 +150,8 @@ public abstract class IndexerAbs {
 
 		queue.clear();
 	}
-	
-	
+
+
 	private void addFiles(File file) {
 
 		if (!file.exists()) {
@@ -155,7 +163,7 @@ public abstract class IndexerAbs {
 			}
 		} else {
 			queue.add(file);
-			
+
 			/*
 			String filename = file.getName().toLowerCase();
 			//===================================================
@@ -167,17 +175,44 @@ public abstract class IndexerAbs {
 			} else {
 				System.out.println("Skipped " + filename);
 			}
-			*/
+			 */
 		}
 	}
-	
+
+	public void indexDatabase(String table, String database) throws SQLException, IOException{
+
+		String url = "jdbc:mysql://localhost:3306/" + database;
+		String user = "root";
+		String passwd = "";
+
+		Connection conn = DriverManager.getConnection(url, user, passwd);
+
+		String requete = "SELECT * FROM " + table + " ;";
+		PreparedStatement requetePrepare = conn.prepareStatement(requete,ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY );
+		ResultSet result = requetePrepare.executeQuery();
+		ResultSetMetaData resultMeta = requetePrepare.getMetaData();
+
+		while(result.next()){
+			Document doc = new Document();
+
+			for(int i = 1; i<resultMeta.getColumnCount(); i++){
+				doc.add(new StringField(resultMeta.getColumnName(i), result.getObject(i).toString(), Field.Store.YES));
+			}
+			writer.addDocument(doc);
+
+		}
+		requetePrepare.close();
+		result.close();
+
+	}
+
 	public void closeIndex() throws IOException {
 		writer.close();
 	}
-	
+
 	public void action(String source) throws IOException {
 		indexFileOrDirectory(source);
 		closeIndex();
 	}
-	
+
 }
