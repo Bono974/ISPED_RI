@@ -1,108 +1,106 @@
 package projet.recherche;
 
-import java.io.InputStream;
+import java.io.File;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
-import com.hp.hpl.jena.ontology.OntClass;
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
-import com.hp.hpl.jena.ontology.OntProperty;
-import com.hp.hpl.jena.ontology.OntResource;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.util.FileManager;
-import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.ClassExpressionType;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAnnotation;
+import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLDatatype;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.util.OWLOntologyWalker;
+import org.semanticweb.owlapi.util.OWLOntologyWalkerVisitor;
+
+import com.google.common.base.Optional;
 
 public class Ontologie {
-	/**
-	 * Cet attribut correspond au modèle
-     * de l'ontologie utilisée
-	 * @see Ontologie
-	 */
-    private OntModel base;
+	
+	private String fileOntology = "/Users/bruno/Dropbox/ISPED/inf203/ISPED_RI/data/ontology/Thesaurus.owl";
+	private OWLOntology ontology;
+	private OWLOntologyManager manager;
+	private String defaultURI;
+	
+	public Ontologie (){		
+		//System.setProperty("entityExpansionLimit","100000000");
+		try {
+			IRI iri;
+			long startTime, endTime, duration;
+			defaultURI = "ontology does not have an IRI";
 
-    public Ontologie () {
-        OntModel m = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
-        //InputStream in = FileManager.get().open("/Users/bruno/Dropbox/ISPED/inf203/ISPED_RI/data/ontology/Thesaurus.owl");
-        InputStream in = FileManager.get().open("/Users/bruno/Dropbox/ISPED/ime302_projet/final/animanga.owl");
+			startTime = System.nanoTime();
+			
+			manager = OWLManager.createOWLOntologyManager();
+			iri = IRI.create(new File(fileOntology));
+			ontology = manager.loadOntologyFromOntologyDocument(iri);
+			
+			endTime = System.nanoTime();
+			duration = (endTime - startTime) / 1000000; 
 
-        if (in == null)
-            throw new IllegalArgumentException("Fichier non existant.");
-        this.base = (OntModel) m.read(in, "RDF/XML");
-    }
+			// Java 8 ou com.google.common.base.Optional
+			// Permet de s'abstenir d'avoir des pointers null exceptions
+			Optional<IRI> uri = ontology.getOntologyID().getOntologyIRI();
+			if (uri.isPresent())
+				defaultURI = uri.get().toString();
+			
+			System.out.println("Loaded ontology: " + ontology);
+			System.out.println("Temps de chargement  : "+ duration + " ms");
+			System.out.println(defaultURI);
+		} catch (OWLOntologyCreationException e) {
+			e.printStackTrace();
+		}
+	}
 
-    /**
-	 *  Méthode d'expansion de recherche
-	 *  Retourne une liste enrichie de mots clés à partir d'une ontologie
-	 *  @param motsEntres Liste de mots clés
-	 */
-    public List<String> expansionRequete(List<String> motsEntres) {
-        OntClass cur;
-        List<String> res = new ArrayList<String>();
-        List<String> motsEntresTmp = new ArrayList<String>(motsEntres);
+	public List<OWLClass> expansionRequete(List<String> motsEntres) {
+		List<OWLClass> res = new ArrayList<OWLClass>();
+		
+		OWLDataFactory factory = this.manager.getOWLDataFactory();
+		final OWLAnnotationProperty comment = factory.getRDFSComment();
+		OWLOntologyWalker walker = new OWLOntologyWalker(Collections.singleton(ontology));
 
-        OntModel inf = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM_MICRO_RULE_INF, this.base);
-        System.out.println("tata");
-        ExtendedIterator<OntClass> top = inf.listClasses();
-        top.next(); // Nothing concept
-        top.next(); // Thing concept
+		OWLOntologyWalkerVisitor visitor = new OWLOntologyWalkerVisitor(walker) {
+			@Override
+			public void visit(OWLObjectPropertyAssertionAxiom axiom) {
+				System.out.println(axiom);
+				return;
+			}
+			@Override
+			public void visit(OWLDataPropertyAssertionAxiom axiom) {
+				System.out.println(axiom);
+				return;
+			}
+			@Override
+			public void visit(OWLAnnotationAssertionAxiom axiom) {
+				System.out.println(axiom.getAnnotations(comment));
+				return;
+			}
+			
+		};
+		walker.walkStructure(visitor);      
 
-        while(top.hasNext()) { // Top levels concepts
-            cur = top.next();
-            res.addAll(recTree(cur, motsEntresTmp)); // From top to bottom (recursive fct)
-        }
-
-        return new ArrayList<String>(new HashSet<String>(res)); // Remove all occurences
-    }
-
-    /**
-	 *  Méthode privée permettant de parcourir l'arbre de concepts
-	 *  @param cur Concept 'racine'
-	 *  @param motsEntres List de mots clés
-	 */
-    private List<String> recTree(OntClass cur, List<String> motsEntres){
-        List<String> res = new ArrayList<String>();
-        ExtendedIterator<OntProperty> tmp1 = cur.listDeclaredProperties(); // List all cur's properties
-        while(tmp1.hasNext()) {
-            OntProperty cur2 = tmp1.next(); // Triplet [Concept, prop, Concept]
-
-            OntResource domain = cur2.getDomain();
-            String prop = cur2.getLocalName();
-            OntResource range = cur2.getRange();
-
-            if (domain.getURI() == null || range.getURI() == null)
-                continue;
-
-            for(String ew:motsEntres){
-                // TODO Revoir les conditions pour ajouter l'info (domain/prop/range) dans la liste motsEntres
-                // pour l'expansion de requête
-                if (domain.getURI().contains(ew) || range.getURI().contains(ew)) {
-                    res.add(prop);
-                    res.add(range.getLocalName());
-                    res.add(domain.getLocalName());
-                }
-            }
-        }
-
-        if (cur.hasSubClass()) {
-            ExtendedIterator<OntClass> subClasses= cur.listSubClasses(); // Follow the subclasses in recursive way
-            while (subClasses.hasNext())
-                //System.out.println(subClasses.next());
-                res.addAll(recTree(subClasses.next(), motsEntres));
-        }
-        return res;
-    }
-
-    public static void main(String args[]){
-        Ontologie toto = new Ontologie();
-
-        List<String> lword = new ArrayList<String>();
-        lword.add("anime");
-        lword.add("manga");
-        lword.add("seiyuu");
-
-        List<String> res = toto.expansionRequete(lword);
-        System.out.println(res);
-    }
+		return res;
+	}
+	
+	public static void main(String args[]) {
+		Ontologie ontology = new Ontologie();
+		List<String> motsEntres = new ArrayList<String>();
+		motsEntres.add("cancer");
+		motsEntres.add("breast");
+		List<OWLClass> conceptsEtendus = ontology.expansionRequete(motsEntres);
+		// À partir de ces concepts, on peut retrouver les annotations / noms préférés ...
+	}
 }
