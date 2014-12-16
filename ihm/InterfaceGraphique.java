@@ -3,6 +3,7 @@ package projet.ihm;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -196,7 +197,6 @@ public class InterfaceGraphique extends JFrame {
 		creationOngletIndex();
 		creationOngletRecherche();
 
-
 		this.getContentPane().add(onglets);
 		this.setVisible(true);
 
@@ -207,8 +207,12 @@ public class InterfaceGraphique extends JFrame {
 
 		//this.setBounds(x,y,w,h); //Position et taille dans l’écran
 
+		// Permet d'afficher la fenetre au milieu de l'écran
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
+		
 		this.setVisible(true); //Dessine la fenêtre au 1er plan, par dessus 
-
+		this.setResizable(false);
 	}
 
 
