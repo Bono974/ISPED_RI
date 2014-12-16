@@ -1,6 +1,8 @@
 package projet.ihm;
 
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -13,7 +15,6 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-
 
 import projet.index.IndexerAbs;
 import projet.recherche.Recherche;
@@ -41,8 +42,13 @@ public class InterfaceGraphique extends JFrame {
 	JComboBox<String> choixLangueIndex;
 	JComboBox<String> choixLangueRecherche;
 	
+	GridBagConstraints gbc = new GridBagConstraints();
+
 	File repertoire;
 
+	String imageGoogle = "/Users/bruno/Documents/workspace/RI/src/GOOGLE-VECTORLOGO-BIZ-128x128.png";
+	//String imageGoogle = "/home/yoann/workspace/GOOGLE-VECTORLOGO-BIZ-128x128.png";
+	
 	public JComboBox<String> listeChoixLangue(String utilisation) {
 
 		JComboBox<String> choixLangue;
@@ -69,7 +75,6 @@ public class InterfaceGraphique extends JFrame {
 
 		// Panel de l'index
 		ongletIndexation = new JPanel();
-		//ongletIndexation.setLayout(new GroupLayout(ongletIndexation));
 
 		JLabel titreOngletIndexation = new JLabel("Choisissez le répertoire à indexer");
 		ongletIndexation.add(titreOngletIndexation);
@@ -77,7 +82,7 @@ public class InterfaceGraphique extends JFrame {
 
 		// Bouton Repertoire
 		bRepertoire = new JButton("Parcourir...");
-		bRepertoire.setAlignmentX(CENTER_ALIGNMENT);
+		//bRepertoire.setAlignmentX(CENTER_ALIGNMENT);
 		BoutonListRep blisRepertoire = new BoutonListRep();
 		bRepertoire.addActionListener(blisRepertoire);
 		ongletIndexation.add(bRepertoire);
@@ -88,7 +93,7 @@ public class InterfaceGraphique extends JFrame {
 
 		// Bouton Indexation
 		bIndex = new JButton("Indexer");
-		bIndex.setAlignmentX(CENTER_ALIGNMENT);
+		//bIndex.setAlignmentX(CENTER_ALIGNMENT);
 		BoutonListIndex blisIndex = new BoutonListIndex();
 		bIndex.addActionListener(blisIndex);
 		ongletIndexation.add(bIndex);
@@ -97,76 +102,92 @@ public class InterfaceGraphique extends JFrame {
 		ongletIndexation.add(retourAction);
 		
 		// Taille de l'onglet
-		ongletIndexation.setPreferredSize(new Dimension(400, 80));
+		//ongletIndexation.setPreferredSize(new Dimension(400, 80));
 		onglets.addTab("Indexation", ongletIndexation);
 
 	}
 
 	public void creationOngletRecherche() throws IOException {
 		ongletRecherche = new JPanel();
-		ongletRecherche.setPreferredSize(new Dimension(1055, 500));
+		ongletRecherche.setLayout(new GridBagLayout());
 		onglets.addTab("Recherche", ongletRecherche);
 
 		// Icone
-		BufferedImage myPicture = ImageIO.read(new File("/home/yoann/workspace/GOOGLE-VECTORLOGO-BIZ-128x128.png"));
+		BufferedImage myPicture = ImageIO.read(new File(imageGoogle));
 		JLabel picLabel = new JLabel(new ImageIcon(myPicture));
-		picLabel.setAlignmentX(CENTER_ALIGNMENT);
-		add(picLabel);
 
-		ongletRecherche.setLayout(new BoxLayout(ongletRecherche, BoxLayout.PAGE_AXIS));
-		ongletRecherche.add(picLabel);
+		gbc.fill = GridBagConstraints.CENTER;
+		//gbc.gridx = 0;
+		//gbc.gridy = 0;
+		
+		ongletRecherche.add(picLabel, gbc);
 
 		// Champ saisie recherche
-		champSaisie = new JTextField();
-		champSaisie.setAlignmentX(CENTER_ALIGNMENT);
-		//champSaisie.setPreferredSize(new Dimension(10, 80));
-		//champSaisie.setBounds(maximizedBounds);
-		ongletRecherche.add(champSaisie);
-
-		// Choix de la langue
-		JPanel panelLangue = new JPanel();
-		JLabel labelLangue = new JLabel("Choix de la langue (optionnel)");
-		choixLangueRecherche = listeChoixLangue("recherche");
-		panelLangue.add(labelLangue);
-		panelLangue.add(choixLangueRecherche);
-
-		ongletRecherche.add(panelLangue);
+		champSaisie = new JTextField();		
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridx = 0;
+		gbc.gridy = 1;
+		gbc.ipadx = 250;
+		ongletRecherche.add(champSaisie, gbc);
 
 		// Bouton rechercher
 		b = new JButton("Rechercher");
-		b.setAlignmentX(CENTER_ALIGNMENT);
 		BoutonListRecherche blis = new BoutonListRecherche();
 		b.addActionListener(blis);
-		ongletRecherche.add(b);
 
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridx = 1;
+		gbc.gridy = 1;
+		gbc.ipadx = 20;
+		ongletRecherche.add(b, gbc);
+		
+		// Choix de la langue
+		JLabel labelLangue = new JLabel("Choix de la langue (optionnel)");
+		choixLangueRecherche = listeChoixLangue("recherche");
+		
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridx = 0;
+		gbc.gridy = 2;
+		ongletRecherche.add(labelLangue, gbc);
+		
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridx = 1;
+		gbc.gridy = 2;
+		gbc.ipadx = 20;
+		ongletRecherche.add(choixLangueRecherche, gbc);
+	
 		// Panneau suggestion ontologie
-		JPanel panelOnto = new JPanel();
 		//JLabel labOnto = new JLabel("Nous vous suggérons d'ajouter ces mots à votre recherche : ");
-		labOnto = new JLabel();
-		labOnto.setAlignmentX(CENTER_ALIGNMENT);
 		//labOnto2 = new JLabel("mot1, mot2, mot3");
+
+		labOnto = new JLabel();
 		labOnto2 = new JLabel();
-		labOnto2.setAlignmentX(CENTER_ALIGNMENT);
-		ongletRecherche.add(panelOnto);
-		panelOnto.add(labOnto);
-		panelOnto.add(labOnto2);
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridx = 0;
+		gbc.gridy = 6;
+		ongletRecherche.add(labOnto, gbc);
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridx = 1;
+		gbc.gridy = 6;
+		ongletRecherche.add(labOnto2, gbc);
 
 		// Aire des résultats
-		resultatsArea = new JTextArea(8,1);
+		resultatsArea = new JTextArea();
 		scrollResultatsArea = new JScrollPane(resultatsArea,
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-		ongletRecherche.add(scrollResultatsArea);
-		resultatsArea.setPreferredSize(new Dimension(10,20));
-		resultatsArea.setBounds(10, 20, 30, 40);
-		resultatsArea.setAlignmentX(CENTER_ALIGNMENT);
-
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridx = 0;
+		gbc.gridy = 5;
+		gbc.ipadx = 500;
+		gbc.ipady = 300;
+		ongletRecherche.add(scrollResultatsArea, gbc);
 	}
 
 	public InterfaceGraphique (List<IndexerAbs>listIndexer, String titre, int x, int y, int w, int h) throws IOException {
 
 		super(titre);
-		this.setBounds(x,y,w,h);
+		//this.setBounds(x,y,w,h);
 		this.setVisible(true);
 		this.listIndexer = listIndexer;
 
@@ -179,12 +200,12 @@ public class InterfaceGraphique extends JFrame {
 		this.getContentPane().add(onglets);
 		this.setVisible(true);
 
-
+		this.setMinimumSize(new Dimension(800, 700));
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
 		//permet de fermer la fenêtre quand l’utilisateur clique sur la croix
 
-		this.setBounds(x,y,w,h); //Position et taille dans l’écran
+		//this.setBounds(x,y,w,h); //Position et taille dans l’écran
 
 		this.setVisible(true); //Dessine la fenêtre au 1er plan, par dessus 
 
