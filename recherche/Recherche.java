@@ -95,17 +95,17 @@ public class Recherche {
 					System.out.println("Error searching " + motARechercher + " : " + e.getMessage() + " "+ searcher.toString());
 				}
 				return tableauSortie;
-				
+
 			}
 			else {
 				return null;
 			}
-			
+
 		}
 		else {
 			return null;
 		}
-		
+
 
 	}
 
@@ -120,23 +120,31 @@ public class Recherche {
 	 */
 	public List<ScoreEtChemin> search(List<IndexerAbs> lIndexer, String langue, List<String> listeMots)  throws IOException {
 
-		// On initialise l'analyser et le répertoire de l'index
-		StopwordAnalyzerBase analyzer = null;
-		String indexLocation = null;
-		//La première étape de la méthode est de retrouver l'indexer associé à la langue
-		for (IndexerAbs elementIndex: lIndexer) {
-
-			if (elementIndex.getLangue().equalsIgnoreCase(langue)) {
-				// C'est l'index qui nous interesse, on récupère l'analyser associé
-				analyzer = elementIndex.getAnalyzer();
-				// on récupère le chemin de l'index
-				indexLocation = elementIndex.getIndexLocation();
-			}
+		// On vérifie d'abord si la liste de mots à chercher est non null
+		if ((listeMots == null || listeMots.isEmpty())) {
+			return null;
 		}
-		List <ScoreEtChemin> tableauSortie = null;
-		tableauSortie = rechercheMots(listeMots, indexLocation, analyzer);
-		//tableauSortie = trieTableau(tableauSortie);
-		return tableauSortie;
+		else {
+			// On initialise l'analyser et le répertoire de l'index
+			StopwordAnalyzerBase analyzer = null;
+			String indexLocation = null;
+			//La première étape de la méthode est de retrouver l'indexer associé à la langue
+			for (IndexerAbs elementIndex: lIndexer) {
+
+				if (elementIndex.getLangue().equalsIgnoreCase(langue)) {
+					// C'est l'index qui nous interesse, on récupère l'analyser associé
+					analyzer = elementIndex.getAnalyzer();
+					// on récupère le chemin de l'index
+					indexLocation = elementIndex.getIndexLocation();
+				}
+			}
+			List <ScoreEtChemin> tableauSortie = null;
+			tableauSortie = rechercheMots(listeMots, indexLocation, analyzer);
+			//tableauSortie = trieTableau(tableauSortie);
+			return tableauSortie;
+		}
+
+
 	}
 
 
@@ -152,32 +160,38 @@ public class Recherche {
 	 */
 	public List<ScoreEtChemin> search(List<IndexerAbs> lIndexer, List<String> listeMots)  throws IOException {
 
-		StopwordAnalyzerBase analyzer = null;
-		String indexLocation = null;
-		List <ScoreEtChemin> tableauSortie = null;
-		// On lance la recherche pour chaque index
-		for (IndexerAbs indexATraiter: lIndexer) {
-			analyzer = indexATraiter.getAnalyzer();
-			// on récupère le chemin de l'index
-			indexLocation = indexATraiter.getIndexLocation();
-			List <ScoreEtChemin> tableauSortieUneLangue = null;
-			tableauSortieUneLangue = rechercheMots(listeMots, indexLocation, analyzer);
-			if (!(tableauSortieUneLangue == null)) {
-				if (tableauSortie == null ) {
-					tableauSortie = tableauSortieUneLangue;
-				}
-				else {
-					tableauSortie.addAll(tableauSortieUneLangue);
+		// On vérifie d'abord si la liste de mots à chercher est non null
+		if ((listeMots == null || listeMots.isEmpty())) {
+			return null;
+		}
+		else {
+			StopwordAnalyzerBase analyzer = null;
+			String indexLocation = null;
+			List <ScoreEtChemin> tableauSortie = null;
+			// On lance la recherche pour chaque index
+			for (IndexerAbs indexATraiter: lIndexer) {
+				analyzer = indexATraiter.getAnalyzer();
+				// on récupère le chemin de l'index
+				indexLocation = indexATraiter.getIndexLocation();
+				List <ScoreEtChemin> tableauSortieUneLangue = null;
+				tableauSortieUneLangue = rechercheMots(listeMots, indexLocation, analyzer);
+				if (!(tableauSortieUneLangue == null)) {
+					if (tableauSortie == null ) {
+						tableauSortie = tableauSortieUneLangue;
+					}
+					else {
+						tableauSortie.addAll(tableauSortieUneLangue);
+					}
 				}
 			}
-		}
 
-		// Une fois les recherches effectuées, on dédoublonne selon le nom
-		// du document
-		if (!(tableauSortie == null)) {
-			tableauSortie = dedoubleTableau(tableauSortie);
+			// Une fois les recherches effectuées, on dédoublonne selon le nom
+			// du document
+			if (!(tableauSortie == null)) {
+				tableauSortie = dedoubleTableau(tableauSortie);
+			}
+			return tableauSortie;
 		}
-		return tableauSortie;
 	}
 
 	/**
@@ -185,7 +199,13 @@ public class Recherche {
 	 * et restitue une liste de mots suggérés
 	 */
 	public List<String> rechercheOntologie(List<String> listeMots){
-		return null;
+		
+		List<String> resultatsOnto = new ArrayList<String>();
+		
+		resultatsOnto.add("mot4");
+		resultatsOnto.add("mot5");
+		resultatsOnto.add("mot6");
+		return resultatsOnto;
 
 
 	}

@@ -80,47 +80,54 @@ public class InterfaceConsoleImpl extends InterfacePrincipaleAbs{
 							new InputStreamReader(System.in));
 					String langue_choisie = "";
 					System.out.println("Bienvenue dans l'indexation");
-					System.out.println("Bla bla bla indexation");
 					System.out.println("Choisissez une langue parmi:");
 					String langues = "";
 					for(IndexerAbs cur: this.lIndexer)
-						langues += cur.getLangue() +"";
+						langues += cur.getLangue() +" ";
 					System.out.println(langues);
 
 					langue_choisie = br2.readLine();
 
 					String source = cheminSource();
-					System.out.println("Le chemin de la source "+source);
+					boolean retour = false;
 					for(IndexerAbs cur: this.lIndexer) {
 						if (cur.getLangue().equalsIgnoreCase(langue_choisie)) {
 							cur.action(source);
 							System.out.println("Indexation du répertoire "+source+" effectuée.");
+							retour = true;
 							break;
 						}
 					}
+					if (!retour) System.out.println("Aucune indexation n'a été effectuée.");
 					break;
 				case "2":
 					BufferedReader br3 = new BufferedReader(
 							new InputStreamReader(System.in));
 					String mot_rech = "";
 					System.out.println("Bienvenue dans la recherche");
-
+					System.out.println("Saisissez votre liste de mots.");
 
 					mot_rech=br3.readLine();
 					List<String>motsARechercher = new ArrayList<String>();
 					motsARechercher.add(mot_rech);
 					List<ScoreEtChemin> resultatsRecherche;
-
-					resultatsRecherche = rechercheur.search(this.lIndexer, motsARechercher);
-					if (!(resultatsRecherche == null || resultatsRecherche.isEmpty())) {
-						System.out.println("plop");
-						for (ScoreEtChemin cur: resultatsRecherche) 
-							System.out.println("Document : "+cur.getScore()+" "+cur.getChemin());
 					
-					} else 
-						System.out.println("Aucun document ne correspond à votre recherche.");
-					break;
+					// On vérifie qu'un mot a été saisie ou bien qu'il y a autre chose que des caractères blancs
+					if (motsARechercher == null || motsARechercher.equals("") || mot_rech.trim().equals("") ) {
+						System.out.println("Aucun mot à rechercher n'a été saisie.");
+						break;
+					}
+					else {
 
+						resultatsRecherche = rechercheur.search(this.lIndexer, motsARechercher);
+						if (!(resultatsRecherche == null || resultatsRecherche.isEmpty())) {
+							for (ScoreEtChemin cur: resultatsRecherche) 
+								System.out.println("Document : "+cur.getScore()+" "+cur.getChemin());
+
+						} else 
+							System.out.println("Aucun document ne correspond à votre recherche.");
+						break;
+					}
 
 				case "3":
 					System.out.println("Au revoir, A bientôt!");
