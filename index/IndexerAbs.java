@@ -1,6 +1,6 @@
 package projet.index;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Reader;
 import java.sql.Connection;
@@ -23,6 +23,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 import org.apache.tika.Tika;
+import org.apache.tika.metadata.Metadata;
 
 
 public abstract class IndexerAbs {
@@ -112,16 +113,17 @@ public abstract class IndexerAbs {
 
 		int originalNumDocs = writer.numDocs();
 		for (File f : queue) {
-			FileReader fr = null;
+			FileInputStream fr = null;
 			try {
 				Document doc = new Document();
 
 				//===================================================
 				// add contents of file
 				//===================================================
-				fr = new FileReader(f);
+				fr = new FileInputStream(f);
 				Tika tika = new Tika();
-				Reader texte = tika.parse(f);
+				Metadata metadata = new Metadata();
+				Reader texte = tika.parse(fr, metadata);
 				doc.add(new TextField("contents", texte));
 				doc.add(new StringField("path", f.getPath(), Field.Store.YES));
 				doc.add(new StringField("filename", f.getName(), Field.Store.YES));
@@ -201,7 +203,7 @@ public abstract class IndexerAbs {
 			Document doc = new Document();
 
 			for(int i = 1; i<resultMeta.getColumnCount(); i++){
-				doc.add(new StringField(resultMeta.getColumnName(i), result.getObject(i).toString(), Field.Store.YES));
+				doc.add(new TextField(resultMeta.getColumnName(i), result.getObject(i).toString(), Field.Store.YES));
 			}
 			writer.addDocument(doc);
 
