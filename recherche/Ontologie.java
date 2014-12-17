@@ -19,6 +19,7 @@ public class Ontologie {
 	
 	public Ontologie() {
 		OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
+		model.setStrictMode(false); // Jena ne gère pas les fichiers OWL2
 		InputStream in = FileManager.get().open(ontologyFile);
 		
 		if (in == null)
@@ -42,20 +43,34 @@ public class Ontologie {
 		return new ArrayList<String>(new HashSet<String>(motsEntresEtendus)); // Ugly way to clear all occurences
 	}
 	
-	private List<String> getBranchAnnotated(OntClass cur) {
-		// Get all the branches labels into a string list
+	private List<String> getParentsAnnotated(OntClass cur) {
+		// Get all the parents labels into a string list 
 		List<String> res = new ArrayList<String>();
 		
 		ExtendedIterator<OntClass> parents = cur.listSuperClasses();
-		ExtendedIterator<OntClass> childs = cur.listSubClasses(); 
-
 		OntClass tmp;
 		String libelle;
 		while(parents.hasNext()) {
 			tmp = parents.next();
 			libelle = tmp.getLabel(null);
 			res.add(libelle);
+			if (tmp.isHierarchyRoot()) // No other things up there, we can browse the next parent
+				continue;
+			res.addAll(getParentsAnnotated(tmp));
 		}
+		return res;
+
+	}
+	private List<String> getBranchAnnotated(OntClass cur) {
+		// Get all the branches labels into a string list (sub/super)
+		List<String> res = new ArrayList<String>();
+		
+		ExtendedIterator<OntClass> childs = cur.listSubClasses(); 
+
+		res.addAll(getParentsAnnotated(cur));	
+		OntClass tmp;
+		String libelle;
+
 		while(childs.hasNext()) {
 			tmp = childs.next();
 			libelle = tmp.getLabel(null);
@@ -72,7 +87,7 @@ public class Ontologie {
 		
 		for (String keyWord: motsEntres)
 			for (String split: libelleSplit)
-				if (split.equals(keyWord)) // Match exactly a word from entry word to a labeled concept from ontology
+				if (split.equalsIgnoreCase(keyWord)) // Match exactly a word from entry word to a labeled concept from ontology
 					return true;
 		return false;
 	}
@@ -97,8 +112,8 @@ public class Ontologie {
 	public static void main(String[] args){
 		Ontologie onto = new Ontologie();
 		List<String> motsEntres = new ArrayList<String>();
-		motsEntres.add("Benproperine");
-		motsEntres.add("spironolactone");
+		motsEntres.add("clonidine");
+		//motsEntres.add("iron");
 
 		List<String> res = onto.expansionRequete(motsEntres);
 		System.out.println(res);
