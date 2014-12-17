@@ -14,8 +14,13 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 
 import projet.index.IndexerAbs;
+import projet.sgbd.ConnexionMySQL;
+import projet.sgbd.Requete;
 
 import java.io.*;
+import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -23,6 +28,7 @@ import java.util.List;
 import java.util.Set;
 
 public class Recherche {
+
 
 	/**
 	 * Cette attribut correspond à l'ontologie
@@ -39,6 +45,77 @@ public class Recherche {
 	public Ontologie getOntologie() {
 		return this.onto;
 	}
+
+	/**
+	 * Cette Methode renvoie une liste de RetourDocument
+	 * @see RetourDocument
+	 * @param listeDocuments
+	 * @return
+	 */
+	public List<RetourDocument> rechercheSGDB(List<ScoreEtChemin> listeDocuments) {
+
+
+		ConnexionMySQL maConnexion = new ConnexionMySQL();
+
+		// Chargement du driver MySQL
+		maConnexion.chargementDriver();
+
+		// Création de la connexion avec la base
+		maConnexion.initConnexionMySQL();
+
+		// Création du Statement
+		maConnexion.creationStatement();
+
+		Requete maRequete = new Requete();
+		List<RetourDocument> listeRetourDocument = new ArrayList<RetourDocument>();
+		List<String> listDocumentsString = new ArrayList<String>();
+
+
+		// Récupération des noms de documents
+		for (ScoreEtChemin curseurSC: listeDocuments) {
+			// On split pour n'avoir que le nom du fichier et pas le chemin absolu
+			String nomFichier = curseurSC.getChemin().substring(curseurSC.getChemin().lastIndexOf("/")+1);
+			//System.out.println("Chemin = "+curseurSC.getChemin()+" et nom du fichier "+nomFichier);
+			listDocumentsString.add(nomFichier);
+
+		}
+
+
+		maRequete.RequeteMetadonnees(listDocumentsString);
+		ResultSet monResultat = maConnexion.executerRequete(maRequete);
+		try {
+			// réinitialise le cursor
+			if (monResultat != null) {
+				monResultat.beforeFirst();
+			}
+			else return null;
+
+
+			while (monResultat.next()) {
+				int idDocument = monResultat.getInt("ID");
+				String NomDocument = monResultat.getString("FILENAME");
+				String titreDocument = monResultat.getString("TITRE");
+				String auteurDocument = monResultat.getString("AUTEUR");
+				Date dateDocument = monResultat.getDate("DATE");
+				String sujetDocument = monResultat.getString("SUJET");
+				RetourDocument monRetour = new RetourDocument(idDocument, NomDocument, titreDocument, auteurDocument, dateDocument, sujetDocument);
+				listeRetourDocument.add(monRetour);
+			}
+
+
+		}
+		catch (SQLException e) { 
+			System.err.println("Erreur lors de la generation de la liste d'acte. " + e.getMessage());
+			e.printStackTrace();
+		}
+		// Fermeure de l'objet Statement
+		maConnexion.fermetureStatement();
+		// Fermeture de la connexion à la base
+		maConnexion.fermetureConnexion();
+		return listeRetourDocument;
+	}
+
+
 
 	/**
 	 * Setter de l'attribut onto
@@ -199,9 +276,9 @@ public class Recherche {
 	 * et restitue une liste de mots suggérés
 	 */
 	public List<String> rechercheOntologie(List<String> listeMots){
-		
+
 		List<String> resultatsOnto = new ArrayList<String>();
-		
+
 		resultatsOnto.add("mot4");
 		resultatsOnto.add("mot5");
 		resultatsOnto.add("mot6");
