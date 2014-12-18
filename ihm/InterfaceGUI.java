@@ -13,7 +13,7 @@ public class InterfaceGUI extends InterfacePrincipaleAbs {
 	
 	public InterfaceGUI(List<IndexerAbs> lIndexer) throws IOException {
 		super(lIndexer, "graphique");
-		this.monInterface = new InterfaceGraphique (lIndexer, "Google Onto",100,100,1100,600);
+		this.monInterface = new InterfaceGraphique (lIndexer, "Medoogle Onto",100,100,1100,600);
 		// TODO Auto-generated constructor stub
 	}
 

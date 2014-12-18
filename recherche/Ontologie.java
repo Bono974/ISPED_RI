@@ -15,7 +15,7 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 public class Ontologie {
 	private OntModel model;
-	private String ontologyFile = "/Users/bruno/Dropbox/ISPED/inf203/atc.owl";
+	private String ontologyFile = "/home/yoann/Documents/atc.owl";
 	
 	public Ontologie() {
 		OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
@@ -36,8 +36,10 @@ public class Ontologie {
 		while(topLevels.hasNext()) {
 			cur = topLevels.next(); 
 			String libelle = cur.getLabel(null);
-			if (isToKeepAsMatch(libelle, motsEntresEtendus))
+			if (isToKeepAsMatch(libelle, motsEntresEtendus)) {
+				motsEntresEtendus.add(libelle);
 				motsEntresEtendus.addAll(getBranchAnnotated(cur));
+			}
 			motsEntresEtendus.addAll(recTree(cur, motsEntres));
 		}
 		return new ArrayList<String>(new HashSet<String>(motsEntresEtendus)); // Ugly way to clear all occurences
@@ -59,23 +61,34 @@ public class Ontologie {
 			res.addAll(getParentsAnnotated(tmp));
 		}
 		return res;
-
 	}
-	private List<String> getBranchAnnotated(OntClass cur) {
-		// Get all the branches labels into a string list (sub/super)
+	
+	private List<String> getChildsAnnotated(OntClass cur) {
+		// Get all the parents labels into a string list 
 		List<String> res = new ArrayList<String>();
 		
-		ExtendedIterator<OntClass> childs = cur.listSubClasses(); 
-
-		res.addAll(getParentsAnnotated(cur));	
+		ExtendedIterator<OntClass> childs = cur.listSubClasses();
 		OntClass tmp;
 		String libelle;
-
 		while(childs.hasNext()) {
 			tmp = childs.next();
 			libelle = tmp.getLabel(null);
 			res.add(libelle);
+			if (!(tmp.hasSubClass())) // No other things up there, we can browse the next parent
+				continue;
+			res.addAll(getChildsAnnotated(tmp));
 		}
+		return res;
+	}
+	
+	
+	private List<String> getBranchAnnotated(OntClass cur) {
+		// Get all the branches labels into a string list (sub/super)
+		List<String> res = new ArrayList<String>();
+		
+		res.addAll(getParentsAnnotated(cur));
+		res.addAll(getChildsAnnotated(cur));
+
 		return res;
 	}
 	

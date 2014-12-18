@@ -17,6 +17,8 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+import java.awt.Toolkit;
+
 import projet.index.IndexerAbs;
 import projet.recherche.Recherche;
 import projet.recherche.RetourDocument;
@@ -49,7 +51,9 @@ public class InterfaceGraphique extends JFrame {
 	JMenuBar jmb;
 	JTabbedPane onglets;
 	JTextArea resultatsArea;
+	JTextArea resultatRechercheOnto;
 	JScrollPane scrollResultatsArea;
+	JScrollPane scrollResultatsAreaOnto;
 
 	JPanel ongletRecherche;
 	JPanel ongletIndexation;
@@ -84,7 +88,7 @@ public class InterfaceGraphique extends JFrame {
 		this.getContentPane().add(onglets);
 		this.setVisible(true);
 
-		this.setMinimumSize(new Dimension(800, 700));
+		this.setMinimumSize(new Dimension(1300, 700));
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
 		//permet de fermer la fenêtre quand l’utilisateur clique sur la croix
@@ -215,7 +219,7 @@ public class InterfaceGraphique extends JFrame {
 		//labOnto2 = new JLabel("mot1, mot2, mot3");
 
 		labOnto = new JLabel();
-		labOnto2 = new JLabel();
+		//labOnto2 = new JLabel();
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 0;
 		gbc.gridy = 6;
@@ -223,7 +227,7 @@ public class InterfaceGraphique extends JFrame {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 1;
 		gbc.gridy = 6;
-		ongletRecherche.add(labOnto2, gbc);
+		//ongletRecherche.add(labOnto2, gbc);
 
 		// Aire des résultats
 		resultatsArea = new JTextArea();
@@ -234,8 +238,20 @@ public class InterfaceGraphique extends JFrame {
 		gbc.gridx = 0;
 		gbc.gridy = 5;
 		gbc.ipadx = 500;
-		gbc.ipady = 300;
+		gbc.ipady = 200;
 		ongletRecherche.add(scrollResultatsArea, gbc);
+		
+		resultatRechercheOnto = new JTextArea();
+		scrollResultatsAreaOnto = new JScrollPane(resultatRechercheOnto,
+				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridx = 0;
+		gbc.gridy = 7;
+		gbc.ipadx = 500;
+		gbc.ipady = 200;
+		ongletRecherche.add(scrollResultatsAreaOnto, gbc);
+		
 	}
 
 
@@ -383,22 +399,26 @@ public class InterfaceGraphique extends JFrame {
 					//resultatsOnto = rechercheur.rechercheOntologie(listMots);
 					resultatsOnto = rechercheur.rechercheOntologie(listMots);
 					// Récupération des mots de l'ontologie
-					String listeMotsOnto = null;
 					// Réinitialisation des labels
 					labOnto.setText("");
-					labOnto2.setText("");
+					//labOnto2.setText("");
+					resultatRechercheOnto.setSelectionStart(0);
+					resultatRechercheOnto.setSelectionEnd(resultatsArea.getText().length());
+					resultatRechercheOnto.setText("");
 					if (!(resultatsOnto == null || resultatsOnto.isEmpty())) {
 
 						labOnto.setText("Nous vous suggérons d'ajouter ces mots à votre recherche : ");
+						int positionOnto;
+
 						for (String motOnto: resultatsOnto) {
 
-							if (listeMotsOnto == null) {
-								listeMotsOnto = motOnto;
-							}
-							else {
-								listeMotsOnto = listeMotsOnto+", "+motOnto;
-							}
-							labOnto2.setText(listeMotsOnto);
+						
+							positionOnto = resultatRechercheOnto.getCaretPosition();
+							resultatRechercheOnto.insert(motOnto+"\n",positionOnto);
+							//resultatRechercheOnto.insert("PLOP",positionOnto);
+							resultatRechercheOnto.setLineWrap(true);
+							System.out.println(motOnto);
+							
 
 						}
 					}

@@ -35,7 +35,7 @@ public class Recherche {
 	 * utilisée
 	 * @see Ontologie
 	 */
-	private Ontologie onto;
+	private Ontologie onto = new Ontologie();
 
 	/**
 	 * Getter de l'attribut onto
@@ -302,15 +302,22 @@ public class Recherche {
 	/**
 	 * Cette fonction effectue la recherche au sein de l'ontologie à partir d'une liste de mots
 	 * et restitue une liste de mots suggérés
+	 * les mots sont triés par ordre alphabétiques
 	 */
 	public List<String> rechercheOntologie(List<String> listeMots){
+		
+		List<String> retour = onto.expansionRequete(listeMots);
+		List<String> retour2 = new ArrayList<String>();
+		
+		for (String curseur: retour) {
+			curseur = curseur.toLowerCase();
+			retour2.add(curseur);
+		}
+		
+		
+		Collections.sort(retour2);
 
-		List<String> resultatsOnto = new ArrayList<String>();
-
-		resultatsOnto.add("mot4");
-		resultatsOnto.add("mot5");
-		resultatsOnto.add("mot6");
-		return resultatsOnto;
+		return retour2;
 
 
 	}
