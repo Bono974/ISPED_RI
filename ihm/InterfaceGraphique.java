@@ -90,8 +90,11 @@ public class InterfaceGraphique extends JFrame {
 		//permet de fermer la fenêtre quand l’utilisateur clique sur la croix
 
 		//this.setBounds(x,y,w,h); //Position et taille dans l’écran
-
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
+	
 		this.setVisible(true); //Dessine la fenêtre au 1er plan, par dessus 
+		//this.setResizable(false);
 
 	}
 
