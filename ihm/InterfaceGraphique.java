@@ -3,11 +3,11 @@ package projet.ihm;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,14 +19,30 @@ import javax.swing.*;
 
 import projet.index.IndexerAbs;
 import projet.recherche.Recherche;
+import projet.recherche.RetourDocument;
 import projet.recherche.ScoreEtChemin;
 
 @SuppressWarnings("serial")
 public class InterfaceGraphique extends JFrame {
-	List<IndexerAbs>listIndexer;
 
+	/**
+	 * Liste des indexer à traiter
+	 */
+	final List<IndexerAbs>listIndexer;
+
+	/**
+	 * Bouton de lancement de la recherche
+	 */
 	JButton b;
+
+	/**
+	 * Bouton au lancement de l'index
+	 */
 	JButton bIndex;
+
+	/**
+	 * Bouton du choix de répertoire
+	 */
 	JButton bRepertoire;
 	JTextField champSaisie;
 	JPanel p;
@@ -40,16 +56,45 @@ public class InterfaceGraphique extends JFrame {
 	JLabel labOnto;
 	JLabel labOnto2;
 	JLabel retourAction;
+	JLabel nomRepLabel;
 	JComboBox<String> choixLangueIndex;
 	JComboBox<String> choixLangueRecherche;
-	
+
 	GridBagConstraints gbc = new GridBagConstraints();
 
 	File repertoire;
 
-	String imageGoogle = "/Users/bruno/Documents/workspace/RI/src/GOOGLE-VECTORLOGO-BIZ-128x128.png";
+	//String imageGoogle = "/Users/bruno/Documents/workspace/RI/src/GOOGLE-VECTORLOGO-BIZ-128x128.png";
 	//String imageGoogle = "/home/yoann/workspace/GOOGLE-VECTORLOGO-BIZ-128x128.png";
-	
+	String imageGoogle = "/home/yoann/ISPED_RI/mantle-lucene.png";
+
+	public InterfaceGraphique (final List<IndexerAbs>listIndexer, String titre, int x, int y, int w, int h) throws IOException {
+
+		super(titre);
+		//this.setBounds(x,y,w,h);
+		this.setVisible(true);
+		this.listIndexer = listIndexer;
+
+		// onglet
+		onglets = new JTabbedPane();
+		creationOngletIndex();
+		creationOngletRecherche();
+
+
+		this.getContentPane().add(onglets);
+		this.setVisible(true);
+
+		this.setMinimumSize(new Dimension(800, 700));
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+		//permet de fermer la fenêtre quand l’utilisateur clique sur la croix
+
+		//this.setBounds(x,y,w,h); //Position et taille dans l’écran
+
+		this.setVisible(true); //Dessine la fenêtre au 1er plan, par dessus 
+
+	}
+
 	public JComboBox<String> listeChoixLangue(String utilisation) {
 
 		JComboBox<String> choixLangue;
@@ -101,7 +146,12 @@ public class InterfaceGraphique extends JFrame {
 
 		retourAction = new JLabel();
 		ongletIndexation.add(retourAction);
-		
+
+		// Label du nom de répertoire
+		nomRepLabel = new JLabel();
+		ongletIndexation.add(nomRepLabel);
+
+
 		// Taille de l'onglet
 		//ongletIndexation.setPreferredSize(new Dimension(400, 80));
 		onglets.addTab("Indexation", ongletIndexation);
@@ -120,7 +170,7 @@ public class InterfaceGraphique extends JFrame {
 		gbc.fill = GridBagConstraints.CENTER;
 		//gbc.gridx = 0;
 		//gbc.gridy = 0;
-		
+
 		ongletRecherche.add(picLabel, gbc);
 
 		// Champ saisie recherche
@@ -141,22 +191,22 @@ public class InterfaceGraphique extends JFrame {
 		gbc.gridy = 1;
 		gbc.ipadx = 20;
 		ongletRecherche.add(b, gbc);
-		
+
 		// Choix de la langue
 		JLabel labelLangue = new JLabel("Choix de la langue (optionnel)");
 		choixLangueRecherche = listeChoixLangue("recherche");
-		
+
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 0;
 		gbc.gridy = 2;
 		ongletRecherche.add(labelLangue, gbc);
-		
+
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 1;
 		gbc.gridy = 2;
 		gbc.ipadx = 20;
 		ongletRecherche.add(choixLangueRecherche, gbc);
-	
+
 		// Panneau suggestion ontologie
 		//JLabel labOnto = new JLabel("Nous vous suggérons d'ajouter ces mots à votre recherche : ");
 		//labOnto2 = new JLabel("mot1, mot2, mot3");
@@ -185,35 +235,7 @@ public class InterfaceGraphique extends JFrame {
 		ongletRecherche.add(scrollResultatsArea, gbc);
 	}
 
-	public InterfaceGraphique (List<IndexerAbs>listIndexer, String titre, int x, int y, int w, int h) throws IOException {
 
-		super(titre);
-		//this.setBounds(x,y,w,h);
-		this.setVisible(true);
-		this.listIndexer = listIndexer;
-
-		// onglet
-		onglets = new JTabbedPane();
-		creationOngletIndex();
-		creationOngletRecherche();
-
-		this.getContentPane().add(onglets);
-		this.setVisible(true);
-
-		this.setMinimumSize(new Dimension(800, 700));
-		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-
-		//permet de fermer la fenêtre quand l’utilisateur clique sur la croix
-
-		//this.setBounds(x,y,w,h); //Position et taille dans l’écran
-
-		// Permet d'afficher la fenetre au milieu de l'écran
-		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
-		
-		this.setVisible(true); //Dessine la fenêtre au 1er plan, par dessus 
-		this.setResizable(false);
-	}
 
 
 	class BoutonListRep implements ActionListener {
@@ -232,21 +254,34 @@ public class InterfaceGraphique extends JFrame {
 			// récupération du fichier sélectionné
 			repertoire = choixRepertoire.getSelectedFile();
 			System.out.println(repertoire.toString());
+			// On réinitialise le label de compte rendu de résultat d'indexation
+			retourAction.setText("");
+
+			// On affiche le nom du répertoire.
+			nomRepLabel.setText(repertoire.toString());
 		}
 	}
 
 	class BoutonListIndex implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			
+
 			// On regarde la langue choisie
-			
+
 			String langueChoisieIndex = (String) choixLangueIndex.getSelectedItem();
 			if (!(langueChoisieIndex == null || langueChoisieIndex.isEmpty())) {
 				System.out.println("L'indexation va s'effectuer en "+langueChoisieIndex);
 				for(IndexerAbs cur: listIndexer) {
 					if (cur.getLangue().equalsIgnoreCase(langueChoisieIndex)) {
-						cur.action(repertoire.toString());
+						try {
+							cur.action(repertoire.toString());
+						} catch (FileNotFoundException e1) {
+							nomRepLabel.setText("Le répertoire n'existe pas.");
+
+						} catch (IOException e1) {
+							nomRepLabel.setText("Le répertoire d'index n'existe pas.");
+						}
 						System.out.println("Indexation du répertoire "+repertoire.toString()+" effectuée.");
+						nomRepLabel.setText("");
 						retourAction.setText("Indexation du répertoire "+repertoire.toString()+" effectuée.");
 					}
 				}
@@ -255,11 +290,11 @@ public class InterfaceGraphique extends JFrame {
 				System.out.println("Aucune langue choisie. L'indexation ne peut être lancée.");
 				retourAction.setText("Aucune langue choisie. L'indexation ne peut être lancée.");
 			}
-			
+
 			// On lance l'indexation du répertoire
-			
-			
-			
+
+
+
 		}
 	}
 
@@ -296,6 +331,9 @@ public class InterfaceGraphique extends JFrame {
 						resultatsRecherche = rechercheur.search(listIndexer, listMots);
 					}
 
+					List<RetourDocument> retourDoc = rechercheur.rechercheSGDB(resultatsRecherche);
+
+
 					// Nombre de documents retournés
 					//int nbDocuments = resultatsRecherche.size();
 					int position;
@@ -305,8 +343,32 @@ public class InterfaceGraphique extends JFrame {
 
 					for (ScoreEtChemin cur: resultatsRecherche) {
 
-						String doc = cur.getChemin()+"\n";
-						System.out.println(doc);
+						String nomCourt = cur.getChemin().substring(cur.getChemin().lastIndexOf("/")+1);
+						String complement = null;
+
+						System.out.println("Nom court= "+nomCourt);
+
+						// On prépare la ligne à afficher						
+						if (retourDoc != null) {
+							for (RetourDocument curseurRetour: retourDoc) {
+								if (nomCourt.equalsIgnoreCase(curseurRetour.getNomDocument())) {
+									// Le document a des métadonnées, on les affiche
+
+									complement = " (TITRE = "+curseurRetour.getTitreDocument()
+											+ ", AUTEUR = "+curseurRetour.getAuteurDocument()
+											+ ", DATE = "+curseurRetour.getDateDocument()
+											+ ", SUJET = "+curseurRetour.getSujetDocument()+")";
+								}
+							}
+						}
+						String doc = null;
+						if (complement == null) {
+							doc = cur.getChemin()+"\n";
+						}
+						else {
+							doc = cur.getChemin()+complement+"\n";
+						}
+
 						System.out.println("Document : "+cur.getScore()+" "+doc);
 						position = resultatsArea.getCaretPosition();
 						resultatsArea.insert(doc,position);

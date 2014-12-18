@@ -1,6 +1,7 @@
 package projet.index;
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.sql.Connection;
@@ -23,11 +24,13 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 import org.apache.tika.Tika;
-import org.apache.tika.metadata.Metadata;
 
 
 public abstract class IndexerAbs {
 
+	protected FSDirectory dir;
+	protected IndexWriterConfig config;
+	
 	protected StopwordAnalyzerBase analyzer;
 	/**
 	 * Langue utilisée.
@@ -57,10 +60,10 @@ public abstract class IndexerAbs {
 	public IndexerAbs (String langue, String indexLocation, StopwordAnalyzerBase analyzer) throws IOException{
 
 
-		FSDirectory dir = FSDirectory.open(new File(indexLocation));
-		IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_40, analyzer);
+		dir = FSDirectory.open(new File(indexLocation));
+		config = new IndexWriterConfig(Version.LUCENE_40, analyzer);
 		config.setOpenMode(OpenMode.CREATE_OR_APPEND);
-		writer = new IndexWriter(dir, config);
+		
 
 
 		this.langue = langue;
@@ -103,27 +106,33 @@ public abstract class IndexerAbs {
 	 * @param fileName Nom du dossier de documents
 	 * @throws IOException
 	 */
-	public void indexFileOrDirectory(String fileName) {
+	public void indexFileOrDirectory(String fileName) throws FileNotFoundException, IOException {
 		//===================================================
 		//gets the list of files in a folder (if user has submitted
 		//the name of a folder) or gets a single file name (is user
 		//has submitted only the file name) 
 		//===================================================
-		addFiles(new File(fileName));
+		writer = new IndexWriter(this.dir, this.config);
+		File nomFichier = new File(fileName);
+		if (!nomFichier.exists()) {
+			throw new FileNotFoundException(fileName + "n'existe pas.");
+		}
+		
+		addFiles(nomFichier);
+		
 
 		int originalNumDocs = writer.numDocs();
 		for (File f : queue) {
-			FileInputStream fr = null;
+			FileReader fr = null;
 			try {
 				Document doc = new Document();
 
 				//===================================================
 				// add contents of file
 				//===================================================
-				fr = new FileInputStream(f);
+				fr = new FileReader(f);
 				Tika tika = new Tika();
-				Metadata metadata = new Metadata();
-				Reader texte = tika.parse(fr, metadata);
+				Reader texte = tika.parse(f);
 				doc.add(new TextField("contents", texte));
 				doc.add(new StringField("path", f.getPath(), Field.Store.YES));
 				doc.add(new StringField("filename", f.getName(), Field.Store.YES));
@@ -203,7 +212,7 @@ public abstract class IndexerAbs {
 			Document doc = new Document();
 
 			for(int i = 1; i<resultMeta.getColumnCount(); i++){
-				doc.add(new TextField(resultMeta.getColumnName(i), result.getObject(i).toString(), Field.Store.YES));
+				doc.add(new StringField(resultMeta.getColumnName(i), result.getObject(i).toString(), Field.Store.YES));
 			}
 			writer.addDocument(doc);
 
@@ -222,9 +231,9 @@ public abstract class IndexerAbs {
 		}
 	}
 
-	public void action(String source) {
+	public void action(String source) throws FileNotFoundException, IOException {
 		indexFileOrDirectory(source);
 		closeIndex();
 	}
-
+	
 }

@@ -1,5 +1,6 @@
 package projet.ihm;
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -76,30 +77,37 @@ public class InterfaceConsoleImpl extends InterfacePrincipaleAbs{
 
 				switch (swValue) {
 				case "1":
-					BufferedReader br2 = new BufferedReader(
-							new InputStreamReader(System.in));
-					String langue_choisie = "";
-					System.out.println("Bienvenue dans l'indexation");
-					System.out.println("Choisissez une langue parmi:");
-					String langues = "";
-					for(IndexerAbs cur: this.lIndexer)
-						langues += cur.getLangue() +" ";
-					System.out.println(langues);
+					String source = null;
+					try {
+						BufferedReader br2 = new BufferedReader(
+								new InputStreamReader(System.in));
+						String langue_choisie = "";
+						System.out.println("Bienvenue dans l'indexation");
+						System.out.println("Choisissez une langue parmi:");
+						String langues = "";
+						for(IndexerAbs cur: this.lIndexer)
+							langues += cur.getLangue() +" ";
+						System.out.println(langues);
 
-					langue_choisie = br2.readLine();
+						langue_choisie = br2.readLine();
 
-					String source = cheminSource();
-					boolean retour = false;
-					for(IndexerAbs cur: this.lIndexer) {
-						if (cur.getLangue().equalsIgnoreCase(langue_choisie)) {
-							cur.action(source);
-							System.out.println("Indexation du répertoire "+source+" effectuée.");
-							retour = true;
-							break;
+						source = cheminSource();
+						boolean retour = false;
+						for(IndexerAbs cur: this.lIndexer) {
+							if (cur.getLangue().equalsIgnoreCase(langue_choisie)) {
+								cur.action(source);
+								System.out.println("Indexation du répertoire "+source+" effectuée.");
+								retour = true;
+								break;
+							}
 						}
+						if (!retour) System.out.println("Aucune indexation n'a été effectuée.");
+						break;
 					}
-					if (!retour) System.out.println("Aucune indexation n'a été effectuée.");
-					break;
+					catch(FileNotFoundException e) {
+						System.out.println("Le fichier "+source+" n'existe pas.");
+						break;
+					}
 				case "2":
 					BufferedReader br3 = new BufferedReader(
 							new InputStreamReader(System.in));

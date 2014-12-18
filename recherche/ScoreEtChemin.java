@@ -6,14 +6,14 @@ public class ScoreEtChemin implements java.lang.Comparable {
 	/**
 	 * Chemin du document
 	 * @see ScoreEtChemin#getChemin()
-	 * @see Hospitalisation#setChemin(String)
+	 * @see ScoreEtChemin#setChemin(String)
 	 */
 	private String chemin ;
 	
 	/**
 	 * Score du document
 	 * @see ScoreEtChemin#getScore()
-	 * @see Hospitalisation#setScore(int)
+	 * @see ScoreEtChemin#setScore(int)
 	 */
 	private float score ;
 
@@ -96,6 +96,12 @@ public class ScoreEtChemin implements java.lang.Comparable {
 	    this.score = 0 ;
 	}
 	
+	/**
+	 * Cette méthode est une surchage de la méthode compareTo de Component
+	 * Elle permet de comparer les objets ScoreEtChemin afin de les trier
+	 * La comparaison s'effectue sur le score
+	 * @see Componant
+	 */
 	public int compareTo(Object autre) {
 		float scoreAutre = ((ScoreEtChemin) autre).getScore();
 		float monScore = this.getScore();

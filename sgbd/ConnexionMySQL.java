@@ -83,7 +83,6 @@ public class ConnexionMySQL {
 			System.err
 					.println("[Technique] Erreur lors de la connexion : <br/>"
 							+ e.getMessage());
-			e.printStackTrace();
 			return 1;
 		}
 	}

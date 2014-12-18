@@ -48,9 +48,9 @@ public class Recherche {
 
 	/**
 	 * Cette Methode renvoie une liste de RetourDocument
-	 * @see RetourDocument
 	 * @param listeDocuments
-	 * @return
+	 * @return Une liste de RetourDocument
+	 * @see RetourDocument
 	 */
 	public List<RetourDocument> rechercheSGDB(List<ScoreEtChemin> listeDocuments) {
 
@@ -61,7 +61,10 @@ public class Recherche {
 		maConnexion.chargementDriver();
 
 		// Création de la connexion avec la base
-		maConnexion.initConnexionMySQL();
+		if (maConnexion.initConnexionMySQL() == 1) {
+			System.out.println("La base de donnée n'est pas accessible.");
+			return null;
+		}
 
 		// Création du Statement
 		maConnexion.creationStatement();
@@ -90,7 +93,7 @@ public class Recherche {
 			}
 			else return null;
 
-
+			// Parcours du résultat de la requête
 			while (monResultat.next()) {
 				int idDocument = monResultat.getInt("ID");
 				String NomDocument = monResultat.getString("FILENAME");
@@ -105,7 +108,7 @@ public class Recherche {
 
 		}
 		catch (SQLException e) { 
-			System.err.println("Erreur lors de la generation de la liste d'acte. " + e.getMessage());
+			System.err.println("Erreur lors de la generation de la liste de document. " + e.getMessage());
 			e.printStackTrace();
 		}
 		// Fermeure de l'objet Statement
@@ -126,6 +129,14 @@ public class Recherche {
 		this.onto = ontoEntree;
 	}
 
+	/**
+	 * Cette méthode effectue un dédoublonnage au sein d'une liste de ScoreEtChemin
+	 * Le dédoublonnage s'effectue sur le chemin, sans prise en compte du score
+	 * La liste est ensuite triée du score le plus fort au score au moins fort
+	 * @param tabEntree
+	 * @return Une liste de ScoreEtChemin sans doublon
+	 * @see ScoreEtChemin
+	 */
 	@SuppressWarnings("unchecked")
 	public List<ScoreEtChemin> dedoubleTableau (List<ScoreEtChemin> tabEntree) {
 		@SuppressWarnings("rawtypes")
@@ -137,6 +148,17 @@ public class Recherche {
 
 	}
 
+	/**
+	 * Cette méthode effectue une recherhche au sein d'un index à partir
+	 * d'une liste de mots, d'un chemin de l'index et d'un analyzer
+	 * @param listeMots
+	 * @param indLocation
+	 * @param analyseur
+	 * @return Une liste de ScoreEtChemin trié du score le plus fort au score le plus faible
+	 * @throws IOException
+	 * @see StopwordAnalyzerBase
+	 * @see ScoreEtChemin
+	 */
 	public List<ScoreEtChemin> rechercheMots(List<String> listeMots, String indLocation, StopwordAnalyzerBase analyseur ) throws IOException {
 		// On effectue maintenant la recherche surs mots de liste en entrée
 		File repertoire = new File(indLocation);
@@ -189,11 +211,14 @@ public class Recherche {
 	/**
 	 * 
 	 *  Cette fonction permet d'effectuer une recherche à partir de :
-	 *  d'un Indexer, d'une langue et d'une liste de mots
+	 *  d'une liste d'IndexerAbs, d'une langue et d'une liste de mots
 	 *  Elle restitue une liste de couple (score ; nom du document)
+	 *  triée du score le plus fort au score le plus faible
 	 *  @param lIndexer Une liste d'Indexer
 	 *  @param langue La langue de l'index
 	 *  @param listeMots La liste de mot à rechercher
+	 *  @see ScoreEtChemin
+	 *  @see IndexerAbs
 	 */
 	public List<ScoreEtChemin> search(List<IndexerAbs> lIndexer, String langue, List<String> listeMots)  throws IOException {
 
@@ -228,12 +253,15 @@ public class Recherche {
 	/**
 	 * 
 	 *  Cette fonction permet d'effectuer une recherche à partir de :
-	 *  d'un Indexer et d'une liste de mots sans précision sur la langue.
+	 *  d'une liste d'IndexerAbs et d'une liste de mots sans précision sur la langue.
 	 *  La recherche s'effectue donc sur tous les index disponibles.
 	 *  Un dédoublonnage des documents restitués est effectué.
 	 *  Elle restitue une liste de couple (score ; nom du document)
+	 *  triée du score le plus fort au score le plus faible
 	 *  @param lIndexer Une liste d'Indexer
 	 *  @param listeMots La liste de mot à rechercher
+	 *  @see ScoreEtChemin
+	 *  @see IndexerAbs
 	 */
 	public List<ScoreEtChemin> search(List<IndexerAbs> lIndexer, List<String> listeMots)  throws IOException {
 
@@ -286,15 +314,5 @@ public class Recherche {
 
 
 	}
-	/**
-	 * Cette fonction restitue la liste de mots suggérés à partir
-	 * de la recherch dans l'ontologie
-	 * @return La liste de mots suggérés à partir de la recherche au sein de l'ontologie
-	 */
-	public List<String> getLastNewKeywordsFromOntology() {
-		return null;
-
-	}
-
 
 }
