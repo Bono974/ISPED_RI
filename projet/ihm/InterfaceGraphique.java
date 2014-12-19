@@ -68,7 +68,7 @@ public class InterfaceGraphique extends JFrame {
 
 	File repertoire;
 
-	String imageGoogle = "/Users/bruno/mantle-lucene.png";
+	String imageLogo = "/Users/bruno/mantle-lucene.png";
 
 	/**
 	 * Constructeur de InterfaceGraphique
@@ -182,14 +182,19 @@ public class InterfaceGraphique extends JFrame {
 		onglets.addTab("Recherche", ongletRecherche);
 
 		// Icone
-		BufferedImage myPicture = ImageIO.read(new File(imageGoogle));
+		BufferedImage myPicture = ImageIO.read(new File(imageLogo));
 		JLabel picLabel = new JLabel(new ImageIcon(myPicture));
 
 		gbc.fill = GridBagConstraints.CENTER;
 		ongletRecherche.add(picLabel, gbc);
 
 		// Champ saisie recherche
+		BoutonListRecherche blis = new BoutonListRecherche();
+
 		champSaisie = new JTextField();		
+		champSaisie.addActionListener(blis);
+
+		
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 0;
 		gbc.gridy = 1;
@@ -198,7 +203,6 @@ public class InterfaceGraphique extends JFrame {
 
 		// Bouton rechercher
 		b = new JButton("Rechercher");
-		BoutonListRecherche blis = new BoutonListRecherche();
 		b.addActionListener(blis);
 
 		gbc.fill = GridBagConstraints.HORIZONTAL;

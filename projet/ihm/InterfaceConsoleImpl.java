@@ -13,16 +13,27 @@ import projet.recherche.ScoreEtChemin;
 
 public class InterfaceConsoleImpl extends InterfacePrincipaleAbs{
 
-
+	/**
+	 * Constructeur
+	 * @param lIndexer
+	 */
 	public InterfaceConsoleImpl(List<IndexerAbs> lIndexer) {
 		super(lIndexer, "Console");
 	}
 
+	/**
+	 * Methode qui permet de saisir et retourner le chemin ou l'utilisateur veut creer l'index
+	 * @return
+	 */
 	public static String cheminIndex(){
-
-
+		/**
+		 * Déclaration buffer pour recuperer saisie clavier de l'utilisateur
+		 */
 		BufferedReader br3 = new BufferedReader(
 				new InputStreamReader(System.in));
+		/**
+		 * Declaration du chemin de l'index
+		 */
 		String indexLocation = null;
 		try {
 			System.out.println("Entrez le chemin ou vous voulez creer l'index : (e.g. /tmp/index or c:\\temp\\index)");
@@ -36,17 +47,24 @@ public class InterfaceConsoleImpl extends InterfacePrincipaleAbs{
 
 	}
 
+	/**
+	 * Methode qui permet de saisir et retourner le chemin des documents que l'utilisateur veut ajouter a l'index
+	 * @return
+	 */
 	public static String cheminSource(){
-
-
+		/**
+		 * Declaration buffer pour recuperer saisie clavier de l'utilisateur
+		 */
 		BufferedReader br4 = new BufferedReader(
 				new InputStreamReader(System.in));
+		/**
+		 * Declaration du chemin des documents a ajouter
+		 */
 		String indexSource = null;
 		System.out.println("Entrez le chemin complet des documents a ajouter dans l'index: (e.g. /tmp/index or c:\\temp\\index)");
 		try {
 			indexSource = br4.readLine();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return indexSource;
@@ -56,15 +74,9 @@ public class InterfaceConsoleImpl extends InterfacePrincipaleAbs{
 	public void run() {
 		// Local variable
 		String swValue;
-
 		BufferedReader br = new BufferedReader(
 				new InputStreamReader(System.in));
-		//List<IndexerAbs>listIndexer = new ArrayList<IndexerAbs>();
 		Recherche rechercheur = new Recherche();
-
-
-
-
 		while(true){
 			System.out.println("===================[     MENU     ]======================");
 			System.out.println("| Faites votre choix:                                   |");
@@ -126,17 +138,14 @@ public class InterfaceConsoleImpl extends InterfacePrincipaleAbs{
 						break;
 					}
 					else {
-
 						resultatsRecherche = rechercheur.search(this.lIndexer, motsARechercher);
 						if (!(resultatsRecherche == null || resultatsRecherche.isEmpty())) {
 							for (ScoreEtChemin cur: resultatsRecherche) 
 								System.out.println("Document : "+cur.getScore()+" "+cur.getChemin());
-
 						} else 
 							System.out.println("Aucun document ne correspond à votre recherche.");
 						break;
 					}
-
 				case "3":
 					System.out.println("Au revoir, A bientôt!");
 					System.exit(0);
@@ -152,7 +161,6 @@ public class InterfaceConsoleImpl extends InterfacePrincipaleAbs{
 					break; 
 				}
 			} catch (IOException e2) {
-				// TODO Auto-generated catch block
 				e2.printStackTrace();
 			}
 		}
