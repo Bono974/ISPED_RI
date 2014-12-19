@@ -52,9 +52,7 @@ public class Recherche {
 	 * @return Une liste de RetourDocument
 	 * @see RetourDocument
 	 */
-	public List<RetourDocument> rechercheSGDB(List<ScoreEtChemin> listeDocuments) {
-
-
+	public List<RetourDocument> rechercheSGBD(List<ScoreEtChemin> listeDocuments) {
 		ConnexionMySQL maConnexion = new ConnexionMySQL();
 
 		// Chargement du driver MySQL
@@ -73,17 +71,15 @@ public class Recherche {
 		List<RetourDocument> listeRetourDocument = new ArrayList<RetourDocument>();
 		List<String> listDocumentsString = new ArrayList<String>();
 
-
 		// Récupération des noms de documents
 		for (ScoreEtChemin curseurSC: listeDocuments) {
 			// On split pour n'avoir que le nom du fichier et pas le chemin absolu
-			String nomFichier = curseurSC.getChemin().substring(curseurSC.getChemin().lastIndexOf("/")+1);
+			//String nomFichier = curseurSC.getChemin().substring(curseurSC.getChemin().lastIndexOf("/")+1);
+			String nomFichier = new File(curseurSC.getChemin()).getName();
+			
 			//System.out.println("Chemin = "+curseurSC.getChemin()+" et nom du fichier "+nomFichier);
 			listDocumentsString.add(nomFichier);
-
 		}
-
-
 		maRequete.RequeteMetadonnees(listDocumentsString);
 		ResultSet monResultat = maConnexion.executerRequete(maRequete);
 		try {
@@ -96,16 +92,14 @@ public class Recherche {
 			// Parcours du résultat de la requête
 			while (monResultat.next()) {
 				int idDocument = monResultat.getInt("ID");
-				String NomDocument = monResultat.getString("FILENAME");
+				String nomDocument = monResultat.getString("FILENAME");
 				String titreDocument = monResultat.getString("TITRE");
 				String auteurDocument = monResultat.getString("AUTEUR");
 				Date dateDocument = monResultat.getDate("DATE");
 				String sujetDocument = monResultat.getString("SUJET");
-				RetourDocument monRetour = new RetourDocument(idDocument, NomDocument, titreDocument, auteurDocument, dateDocument, sujetDocument);
+				RetourDocument monRetour = new RetourDocument(idDocument, nomDocument, titreDocument, auteurDocument, dateDocument, sujetDocument);
 				listeRetourDocument.add(monRetour);
 			}
-
-
 		}
 		catch (SQLException e) { 
 			System.err.println("Erreur lors de la generation de la liste de document. " + e.getMessage());

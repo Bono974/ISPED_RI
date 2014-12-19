@@ -360,7 +360,7 @@ public class InterfaceGraphique extends JFrame {
 						resultatsRecherche = rechercheur.search(listIndexer, listMots);
 					}
 
-					List<RetourDocument> retourDoc = rechercheur.rechercheSGDB(resultatsRecherche);
+					List<RetourDocument> retourDoc = rechercheur.rechercheSGBD(resultatsRecherche);
 					
 					// Nombre de documents retournés
 					//int nbDocuments = resultatsRecherche.size();
