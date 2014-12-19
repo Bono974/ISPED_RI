@@ -370,7 +370,7 @@ public class InterfaceGraphique extends JFrame {
 					resultatsArea.setText("");
 
 					for (ScoreEtChemin cur: resultatsRecherche) {
-						String nomCourt = cur.getChemin().substring(cur.getChemin().lastIndexOf("/")+1);
+						String nomCourt = new File(cur.getChemin()).getName();
 						String complement = null;
 
 						System.out.println("Nom court= "+nomCourt);
