@@ -19,15 +19,12 @@ public class InterfaceGUI extends InterfacePrincipaleAbs {
 	
 	public InterfaceGUI(List<IndexerAbs> lIndexer) throws IOException {
 		super(lIndexer, "graphique");
-		this.monInterface = new InterfaceGraphique (lIndexer, "Medoogle Onto",100,100,1100,600);
-		// TODO Auto-generated constructor stub
+		this.monInterface = new InterfaceGraphique (lIndexer, "Medoogle Onto");
 	}
 
 	@Override
 	public void run() {
-		monInterface.setVisible(true);
-		// TODO Auto-generated method stub
-		
+		monInterface.setVisible(true);		
 	}
 
 }

@@ -68,24 +68,16 @@ public class InterfaceGraphique extends JFrame {
 
 	File repertoire;
 
-	//String imageGoogle = "/Users/bruno/Documents/workspace/RI/src/GOOGLE-VECTORLOGO-BIZ-128x128.png";
-	//String imageGoogle = "/home/yoann/workspace/GOOGLE-VECTORLOGO-BIZ-128x128.png";
-	String imageGoogle = "/home/yoann/ISPED_RI/mantle-lucene.png";
+	String imageGoogle = "/Users/bruno/mantle-lucene.png";
 
 	/**
 	 * Constructeur de InterfaceGraphique
 	 * @param listIndexer Liste des index à traiter
 	 * @param titre Titre de la fenêtre
-	 * @param x Coordonnées x sur l'écran
-	 * @param y Coordonnées y sur l'écran
-	 * @param w Largeur de la fenêtre
-	 * @param h hauteur de la fenêtre
 	 * @throws IOException
 	 */
-	public InterfaceGraphique (final List<IndexerAbs>listIndexer, String titre, int x, int y, int w, int h) throws IOException {
-
+	public InterfaceGraphique (final List<IndexerAbs>listIndexer, String titre) throws IOException {
 		super(titre);
-		//this.setBounds(x,y,w,h);
 		this.setVisible(true);
 		this.listIndexer = listIndexer;
 
@@ -93,23 +85,20 @@ public class InterfaceGraphique extends JFrame {
 		onglets = new JTabbedPane();
 		creationOngletIndex();
 		creationOngletRecherche();
-
-
+		
 		this.getContentPane().add(onglets);
 		this.setVisible(true);
 
-		this.setMinimumSize(new Dimension(1300, 700));
+		this.setMinimumSize(new Dimension(900, 700));
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
 		//permet de fermer la fenêtre quand l’utilisateur clique sur la croix
 
-		//this.setBounds(x,y,w,h); //Position et taille dans l’écran
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
 
 		this.setVisible(true); //Dessine la fenêtre au 1er plan, par dessus 
 		//this.setResizable(false);
-
 	}
 
 	/**
@@ -121,7 +110,6 @@ public class InterfaceGraphique extends JFrame {
 	 * @return La ComboBox à afficher
 	 */
 	private JComboBox<String> listeChoixLangue(String utilisation) {
-
 		JComboBox<String> choixLangue;
 
 		List<String> listeLangue = new ArrayList<String>();
@@ -147,7 +135,6 @@ public class InterfaceGraphique extends JFrame {
 	 * @throws IOException
 	 */
 	private void creationOngletIndex() throws IOException {
-
 		// Panel de l'index
 		ongletIndexation = new JPanel();
 
@@ -180,11 +167,9 @@ public class InterfaceGraphique extends JFrame {
 		nomRepLabel = new JLabel();
 		ongletIndexation.add(nomRepLabel);
 
-
 		// Taille de l'onglet
 		//ongletIndexation.setPreferredSize(new Dimension(400, 80));
 		onglets.addTab("Indexation", ongletIndexation);
-
 	}
 
 	/**
@@ -201,9 +186,6 @@ public class InterfaceGraphique extends JFrame {
 		JLabel picLabel = new JLabel(new ImageIcon(myPicture));
 
 		gbc.fill = GridBagConstraints.CENTER;
-		//gbc.gridx = 0;
-		//gbc.gridy = 0;
-
 		ongletRecherche.add(picLabel, gbc);
 
 		// Champ saisie recherche
@@ -241,11 +223,7 @@ public class InterfaceGraphique extends JFrame {
 		ongletRecherche.add(choixLangueRecherche, gbc);
 
 		// Panneau suggestion ontologie
-		//JLabel labOnto = new JLabel("Nous vous suggérons d'ajouter ces mots à votre recherche : ");
-		//labOnto2 = new JLabel("mot1, mot2, mot3");
-
 		labOnto = new JLabel();
-		//labOnto2 = new JLabel();
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 0;
 		gbc.gridy = 6;
@@ -253,7 +231,6 @@ public class InterfaceGraphique extends JFrame {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 1;
 		gbc.gridy = 6;
-		//ongletRecherche.add(labOnto2, gbc);
 
 		// Aire des résultats
 		resultatsArea = new JTextArea();
@@ -277,7 +254,6 @@ public class InterfaceGraphique extends JFrame {
 		gbc.ipadx = 500;
 		gbc.ipady = 200;
 		ongletRecherche.add(scrollResultatsAreaOnto, gbc);
-
 	}
 
 
@@ -293,21 +269,26 @@ public class InterfaceGraphique extends JFrame {
 			try {
 				repertoireCourant = new File(".").getCanonicalFile();
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			JFileChooser choixRepertoire = new JFileChooser(repertoireCourant);
 			choixRepertoire.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 			// affichage
-			choixRepertoire.showOpenDialog(null);
+			int returnVal = choixRepertoire.showOpenDialog(null);
 			// récupération du fichier sélectionné
-			repertoire = choixRepertoire.getSelectedFile();
-			System.out.println(repertoire.toString());
+
+			String res = "Aucun répertoire choisi";
+			if(returnVal == JFileChooser.APPROVE_OPTION) {
+				repertoire = choixRepertoire.getSelectedFile();
+				System.out.println(repertoire.toString());
+				res = repertoire.toString();
+			} else System.out.println(res);
+		
 			// On réinitialise le label de compte rendu de résultat d'indexation
 			retourAction.setText("");
 
 			// On affiche le nom du répertoire.
-			nomRepLabel.setText(repertoire.toString());
+			nomRepLabel.setText(res);
 		}
 	}
 
@@ -318,9 +299,7 @@ public class InterfaceGraphique extends JFrame {
 	 */
 	class BoutonListIndex implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-
 			// On regarde la langue choisie
-
 			String langueChoisieIndex = (String) choixLangueIndex.getSelectedItem();
 			if (!(langueChoisieIndex == null || langueChoisieIndex.isEmpty())) {
 				System.out.println("L'indexation va s'effectuer en "+langueChoisieIndex);
@@ -344,11 +323,7 @@ public class InterfaceGraphique extends JFrame {
 				System.out.println("Aucune langue choisie. L'indexation ne peut être lancée.");
 				retourAction.setText("Aucune langue choisie. L'indexation ne peut être lancée.");
 			}
-
 			// On lance l'indexation du répertoire
-
-
-
 		}
 	}
 
@@ -358,12 +333,8 @@ public class InterfaceGraphique extends JFrame {
 	 *
 	 */
 	class BoutonListRecherche implements ActionListener {
-
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		public void actionPerformed(ActionEvent e) {
-
-
-
 			// On prépare la liste de mots à rechercher
 			String motsARechercher = champSaisie.getText();
 			// On vérifie qu'un mot a été saisie ou bien qu'il y a autre chose que des caractères blancs
@@ -391,8 +362,7 @@ public class InterfaceGraphique extends JFrame {
 					}
 
 					List<RetourDocument> retourDoc = rechercheur.rechercheSGDB(resultatsRecherche);
-
-
+					
 					// Nombre de documents retournés
 					//int nbDocuments = resultatsRecherche.size();
 					int position;
@@ -401,7 +371,6 @@ public class InterfaceGraphique extends JFrame {
 					resultatsArea.setText("");
 
 					for (ScoreEtChemin cur: resultatsRecherche) {
-
 						String nomCourt = cur.getChemin().substring(cur.getChemin().lastIndexOf("/")+1);
 						String complement = null;
 
@@ -432,7 +401,6 @@ public class InterfaceGraphique extends JFrame {
 						position = resultatsArea.getCaretPosition();
 						resultatsArea.insert(doc,position);
 						resultatsArea.setLineWrap(true);
-
 					}
 					// Recherche Ontologie
 					List<String> resultatsOnto = new ArrayList<String>();
@@ -441,38 +409,25 @@ public class InterfaceGraphique extends JFrame {
 					// Récupération des mots de l'ontologie
 					// Réinitialisation des labels
 					labOnto.setText("");
-					//labOnto2.setText("");
 					resultatRechercheOnto.setSelectionStart(0);
 					resultatRechercheOnto.setSelectionEnd(resultatsArea.getText().length());
 					resultatRechercheOnto.setText("");
 					if (!(resultatsOnto == null || resultatsOnto.isEmpty())) {
-
 						labOnto.setText("Nous vous suggérons d'ajouter ces mots à votre recherche : ");
 						int positionOnto;
 
 						for (String motOnto: resultatsOnto) {
-
-
 							positionOnto = resultatRechercheOnto.getCaretPosition();
 							resultatRechercheOnto.insert(motOnto+"\n",positionOnto);
-							//resultatRechercheOnto.insert("PLOP",positionOnto);
 							resultatRechercheOnto.setLineWrap(true);
 							System.out.println(motOnto);
-
-
 						}
 					}
-
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}
-
-
 		}
-
 	}
-
 }
 

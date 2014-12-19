@@ -15,8 +15,11 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 public class Ontologie {
 	private OntModel model;
-	private String ontologyFile = "/home/yoann/Documents/atc.owl";
+	private String ontologyFile = "/Users/bruno/atc.owl";
 	
+	/**
+	 * Constructeur de l'Ontologie
+	 */
 	public Ontologie() {
 		OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
 		model.setStrictMode(false); // Jena ne gère pas les fichiers OWL2
@@ -27,6 +30,13 @@ public class Ontologie {
 		this.model = (OntModel) model.read(in, null, "TTL");
 	}
 	
+	/**
+	 * Cette méthode renvoie une liste de mots-clés enrichie
+	 * en parcourant une ontologie (ici ATC) à partir d'une liste
+	 * de mots-clés utilisateur
+	 * @param Une liste de mots-clés utilisateur à enrichir
+	 * @return Une liste étendue de mots-clés String
+	 */
 	public List<String> expansionRequete(List<String> motsEntres) {
 		// Return a list of new keywords associated by entry keywords from ontology
 		
@@ -45,49 +55,41 @@ public class Ontologie {
 		return new ArrayList<String>(new HashSet<String>(motsEntresEtendus)); // Ugly way to clear all occurences
 	}
 	
-	private List<String> getParentsAnnotated(OntClass cur) {
+	private List<String> getSubOrSuperClassesAnnotated(OntClass cur, boolean upOrDown) {
 		// Get all the parents labels into a string list 
 		List<String> res = new ArrayList<String>();
-		
-		ExtendedIterator<OntClass> parents = cur.listSuperClasses();
+		ExtendedIterator<OntClass> follow;
 		OntClass tmp;
 		String libelle;
-		while(parents.hasNext()) {
-			tmp = parents.next();
+		
+		if (upOrDown)
+			follow = cur.listSuperClasses();
+		else
+			follow = cur.listSubClasses();
+
+		while(follow.hasNext()) {
+			tmp = follow.next();
 			libelle = tmp.getLabel(null);
 			res.add(libelle);
-			if (tmp.isHierarchyRoot()) // No other things up there, we can browse the next parent
-				continue;
-			res.addAll(getParentsAnnotated(tmp));
+			if (upOrDown){
+				if (tmp.isHierarchyRoot()) // No other things up there, we can browse the next parent
+					continue;
+				res.addAll(getSubOrSuperClassesAnnotated(tmp, true));
+			}	
+			else
+				if (!(tmp.hasSubClass())) // No other things up there, we can browse the next child
+					continue;
+			res.addAll(getSubOrSuperClassesAnnotated(tmp, false));
 		}
 		return res;
 	}
-	
-	private List<String> getChildsAnnotated(OntClass cur) {
-		// Get all the parents labels into a string list 
-		List<String> res = new ArrayList<String>();
-		
-		ExtendedIterator<OntClass> childs = cur.listSubClasses();
-		OntClass tmp;
-		String libelle;
-		while(childs.hasNext()) {
-			tmp = childs.next();
-			libelle = tmp.getLabel(null);
-			res.add(libelle);
-			if (!(tmp.hasSubClass())) // No other things up there, we can browse the next parent
-				continue;
-			res.addAll(getChildsAnnotated(tmp));
-		}
-		return res;
-	}
-	
 	
 	private List<String> getBranchAnnotated(OntClass cur) {
 		// Get all the branches labels into a string list (sub/super)
 		List<String> res = new ArrayList<String>();
 		
-		res.addAll(getParentsAnnotated(cur));
-		res.addAll(getChildsAnnotated(cur));
+		res.addAll(getSubOrSuperClassesAnnotated(cur, true));
+		res.addAll(getSubOrSuperClassesAnnotated(cur, false));
 
 		return res;
 	}
