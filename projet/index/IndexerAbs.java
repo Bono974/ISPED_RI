@@ -59,14 +59,10 @@ public abstract class IndexerAbs {
 	 * @throws IOException
 	 */
 	public IndexerAbs (String langue, String indexLocation, StopwordAnalyzerBase analyzer) throws IOException{
-
-
 		dir = FSDirectory.open(new File(indexLocation));
 		config = new IndexWriterConfig(Version.LUCENE_40, analyzer);
 		config.setOpenMode(OpenMode.CREATE_OR_APPEND);
-		
-
-
+	
 		this.langue = langue;
 		this.indexLocation = indexLocation;
 		this.analyzer = analyzer;
@@ -120,7 +116,6 @@ public abstract class IndexerAbs {
 		}
 		
 		addFiles(nomFichier);
-		
 
 		int originalNumDocs = writer.numDocs();
 		for (File f : queue) {
@@ -154,7 +149,6 @@ public abstract class IndexerAbs {
 				try {
 					fr.close();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -171,7 +165,6 @@ public abstract class IndexerAbs {
 
 
 	private void addFiles(File file) {
-
 		if (!file.exists()) {
 			System.out.println(file + " does not exist.");
 		}
@@ -181,24 +174,10 @@ public abstract class IndexerAbs {
 			}
 		} else {
 			queue.add(file);
-
-			/*
-			String filename = file.getName().toLowerCase();
-			//===================================================
-			// Only index text files
-			//===================================================
-			if (filename.endsWith(".htm") || filename.endsWith(".html") || 
-					filename.endsWith(".xml") || filename.endsWith(".txt") || filename.endsWith(".pdf")){
-				queue.add(file);
-			} else {
-				System.out.println("Skipped " + filename);
-			}
-			 */
 		}
 	}
 
 	public void indexDatabase(String table, String database) throws SQLException, IOException{
-
 		String url = "jdbc:mysql://localhost:3306/" + database;
 		String user = "root";
 		String passwd = "";
@@ -217,21 +196,19 @@ public abstract class IndexerAbs {
 				doc.add(new TextField(resultMeta.getColumnName(i), result.getObject(i).toString(), Field.Store.YES));
 			}
 			writer.addDocument(doc);
-
 		}
 		requetePrepare.close();
 		result.close();
-
 	}
 
 	private void closeIndex() {
 		try {
 			writer.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
+	
 	/**
 	 * Cette fonction permet de lancer l'indexation d'un répertoire de documents.
 	 * @param source Chemin de localisation des documents à indexer.
@@ -242,5 +219,4 @@ public abstract class IndexerAbs {
 		indexFileOrDirectory(source);
 		closeIndex();
 	}
-	
 }

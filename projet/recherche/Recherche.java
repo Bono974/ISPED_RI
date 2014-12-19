@@ -118,8 +118,6 @@ public class Recherche {
 		return listeRetourDocument;
 	}
 
-
-
 	/**
 	 * Setter de l'attribut onto
 	 *  @param ontoEntree Ontologie en entrée
@@ -199,13 +197,10 @@ public class Recherche {
 			else {
 				return null;
 			}
-
 		}
 		else {
 			return null;
 		}
-
-
 	}
 
 	/**
@@ -245,8 +240,6 @@ public class Recherche {
 			//tableauSortie = trieTableau(tableauSortie);
 			return tableauSortie;
 		}
-
-
 	}
 
 
@@ -264,7 +257,6 @@ public class Recherche {
 	 *  @see IndexerAbs
 	 */
 	public List<ScoreEtChemin> search(List<IndexerAbs> lIndexer, List<String> listeMots)  throws IOException {
-
 		// On vérifie d'abord si la liste de mots à chercher est non null
 		if ((listeMots == null || listeMots.isEmpty())) {
 			return null;
@@ -289,7 +281,6 @@ public class Recherche {
 					}
 				}
 			}
-
 			// Une fois les recherches effectuées, on dédoublonne selon le nom
 			// du document
 			if (!(tableauSortie == null)) {
@@ -305,7 +296,6 @@ public class Recherche {
 	 * les mots sont triés par ordre alphabétiques
 	 */
 	public List<String> rechercheOntologie(List<String> listeMots){
-		
 		List<String> retour = onto.expansionRequete(listeMots);
 		List<String> retour2 = new ArrayList<String>();
 		
@@ -313,13 +303,8 @@ public class Recherche {
 			curseur = curseur.toLowerCase();
 			retour2.add(curseur);
 		}
-		
-		
 		Collections.sort(retour2);
 
 		return retour2;
-
-
 	}
-
 }

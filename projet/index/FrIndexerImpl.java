@@ -15,8 +15,5 @@ public class FrIndexerImpl extends IndexerAbs{
 	 */
 	public FrIndexerImpl(String indexLocation) throws IOException{
 		super("FR", indexLocation, new FrenchAnalyzer(Version.LUCENE_40));
-		
 	}
-	
-	
 }

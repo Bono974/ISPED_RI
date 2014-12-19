@@ -39,12 +39,9 @@ public class InterfaceConsoleImpl extends InterfacePrincipaleAbs{
 			System.out.println("Entrez le chemin ou vous voulez creer l'index : (e.g. /tmp/index or c:\\temp\\index)");
 			indexLocation = br3.readLine();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//Scanner sc3 = new Scanner(System.in);
 		return indexLocation;
-
 	}
 
 	/**
@@ -68,7 +65,6 @@ public class InterfaceConsoleImpl extends InterfacePrincipaleAbs{
 			e.printStackTrace();
 		}
 		return indexSource;
-
 	}
 
 	public void run() {

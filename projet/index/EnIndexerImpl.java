@@ -15,7 +15,5 @@ public class EnIndexerImpl extends IndexerAbs{
 	 */
 	public EnIndexerImpl(String indexLocation) throws IOException{
 		super("EN", indexLocation, new EnglishAnalyzer(Version.LUCENE_40));
-
-
 	}
 }

@@ -39,7 +39,6 @@ public class Ontologie {
 	 */
 	public List<String> expansionRequete(List<String> motsEntres) {
 		// Return a list of new keywords associated by entry keywords from ontology
-		
 		List<String> motsEntresEtendus = new ArrayList<String>();
 		ExtendedIterator<OntClass> topLevels = model.listClasses();
 		OntClass cur;
