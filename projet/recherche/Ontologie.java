@@ -15,7 +15,7 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 public class Ontologie {
 	private OntModel model;
-	private String ontologyFile = "/Users/bruno/atc.owl";
+	private String ontologyFile = "../atc.owl";
 	
 	/**
 	 * Constructeur de l'Ontologie
@@ -23,7 +23,7 @@ public class Ontologie {
 	public Ontologie() {
 		OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
 		model.setStrictMode(false); // Jena ne gère pas les fichiers OWL2
-		InputStream in = FileManager.get().open(ontologyFile);
+		InputStream in = FileManager.get().open(getClass().getResource(ontologyFile).toString());
 		
 		if (in == null)
 			throw new IllegalArgumentException("Fichier non existant");

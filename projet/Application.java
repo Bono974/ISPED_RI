@@ -14,12 +14,10 @@ import projet.index.IndexerAbs;
 
 
 public class Application {
-
-	private static String indexLocationFR = "/home/yoann/Documents/IndexRI/FR/";
-	private static String indexLocationEN = "/home/yoann/Documents/IndexRI/EN/";
+	private static String indexLocationFR = "./IndexRI/FR/";
+	private static String indexLocationEN = "./IndexRI/EN/";
 
 	public static void main(String[] args) throws IOException {
-
 		List<IndexerAbs>listIndexer = new ArrayList<IndexerAbs>();
 		listIndexer.add(new EnIndexerImpl(indexLocationEN));
 		listIndexer.add(new FrIndexerImpl(indexLocationFR));
@@ -54,8 +52,5 @@ public class Application {
 			}
 		}
 		ipa.run();
-		
-		
 	}
-
 }

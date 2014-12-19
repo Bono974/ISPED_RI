@@ -5,7 +5,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -14,7 +13,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import java.awt.Toolkit;
@@ -68,7 +66,7 @@ public class InterfaceGraphique extends JFrame {
 
 	File repertoire;
 
-	String imageLogo = "/Users/bruno/mantle-lucene.png";
+	String imageLogo = "../mantle-lucene.png";
 
 	/**
 	 * Constructeur de InterfaceGraphique
@@ -141,7 +139,6 @@ public class InterfaceGraphique extends JFrame {
 		JLabel titreOngletIndexation = new JLabel("Choisissez le répertoire à indexer");
 		ongletIndexation.add(titreOngletIndexation);
 
-
 		// Bouton Repertoire
 		bRepertoire = new JButton("Parcourir...");
 		//bRepertoire.setAlignmentX(CENTER_ALIGNMENT);
@@ -182,8 +179,7 @@ public class InterfaceGraphique extends JFrame {
 		onglets.addTab("Recherche", ongletRecherche);
 
 		// Icone
-		BufferedImage myPicture = ImageIO.read(new File(imageLogo));
-		JLabel picLabel = new JLabel(new ImageIcon(myPicture));
+		JLabel picLabel = new JLabel(new ImageIcon(getClass().getResource(imageLogo)));
 
 		gbc.fill = GridBagConstraints.CENTER;
 		ongletRecherche.add(picLabel, gbc);
@@ -194,7 +190,6 @@ public class InterfaceGraphique extends JFrame {
 		champSaisie = new JTextField();		
 		champSaisie.addActionListener(blis);
 
-		
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 0;
 		gbc.gridy = 1;
